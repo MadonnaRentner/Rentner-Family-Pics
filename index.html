@@ -113,7 +113,27 @@
     .edit-modal-cancel { flex: 1; background: transparent; color: #888880; border: 1px solid #d8d6d0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem; cursor: pointer; }
     .edit-modal-status { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; color: #e63030; margin-top: 0.5rem; min-height: 1rem; }
 
-    footer { border-top: 1px solid #e8e6e0; padding: 2.5rem 3rem; display: flex; justify-content: space-between; align-items: center; }
+    .gallery-spinner {
+      text-align: center;
+      padding: 4rem 2rem;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: #aaa89e;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .spinner-ring {
+      display: inline-block;
+      width: 32px; height: 32px;
+      border: 2px solid #e8e6e0;
+      border-top-color: #e63030;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+        footer { border-top: 1px solid #e8e6e0; padding: 2.5rem 3rem; display: flex; justify-content: space-between; align-items: center; }
     .footer-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; color: #aaa89e; letter-spacing: 0.05em; }
     @media (max-width: 768px) {
       nav { padding: 1.25rem 1.5rem; }
@@ -3636,9 +3656,9 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 </div>
 
 <div class="gallery" id="gallery">
-  <div id="gallery-empty" style="text-align:center; padding:4rem 2rem; font-family:'Helvetica Neue',Arial,sans-serif; color:#bbb;">
-    <svg width="48" height="48" fill="none" viewBox="0 0 24 24" style="margin-bottom:1rem; opacity:0.3;"><path stroke="#1a1a18" stroke-width="1.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke="#1a1a18" stroke-width="1.2"/></svg>
-    <p style="font-size:0.85rem; letter-spacing:0.05em;">No photos yet — scroll down to upload your first one!</p>
+  <div id="gallery-spinner" class="gallery-spinner">
+    <div class="spinner-ring"></div>
+    <p>Loading photos...</p>
   </div>
 </div>
 
@@ -3953,7 +3973,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   });
 
   // LIGHTBOX
-  document.getElementById('lightbox-close').addEventListener('click', () => lightbox.classList.remove('open'));
+  const lightboxClose = document.getElementById('lightbox-close');
+  if (lightboxClose) lightboxClose.addEventListener('click', () => lightbox.classList.remove('open'));
   lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
 
   // FILTERS
@@ -4012,8 +4033,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
     item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
 
-    const empty = document.getElementById('gallery-empty');
-    if (empty) empty.remove();
+    const spinner = document.getElementById('gallery-spinner');
+    if (spinner) spinner.remove();
   }
 
   // EDIT MODAL
@@ -4129,7 +4150,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         await savePhotoToIndex(src, tag, isPdf, '');
         // Only add to gallery if not already shown (avoids duplicate on upload)
         if (!loadedSrcs.has(src)) {
-          addToGallery(src, tag, isPdf, caption);
+          addToGallery(src, tag, isPdf, '');
         }
         count++;
         status.textContent = `Uploading... ${count} done`;
