@@ -237,7 +237,6 @@
 <body>
 
 <div id="cursor"></div>
-<div id="mobile-log" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);color:#fff;font-size:11px;padding:8px;z-index:9999;max-height:150px;overflow-y:auto;font-family:monospace;"></div>
 
 <nav>
   <span class="nav-logo">Rentner-Brown Family Photos</span>
@@ -3741,10 +3740,12 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <button class="filter-btn" data-filter="hart">Hart Family</button>
   <button class="filter-btn" data-filter="lakelawn">Lake Lawn</button>
   <button class="filter-btn" data-filter="madonna">Madonna</button>
+  <button class="filter-btn" data-filter="misc">Misc.</button>
   <button class="filter-btn" data-filter="rentnerbrady">Rentner-Brady Family</button>
   <button class="filter-btn" data-filter="rentnerbrown">Rentner-Brown Family</button>
   <button class="filter-btn" data-filter="rentnercygan">Rentner-Cygan Family</button>
   <button class="filter-btn" data-filter="rentnerhyde">Rentner-Hyde Family</button>
+  <button class="filter-btn" data-filter="vacations">Vacations</button>
   <button class="filter-btn" data-filter="weddings">Weddings</button>
 </div>
 
@@ -3789,10 +3790,12 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     <button class="filter-btn video-filter-btn" data-vfilter="hart">Hart Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="lakelawn">Lake Lawn</button>
     <button class="filter-btn video-filter-btn" data-vfilter="madonna">Madonna</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="misc">Misc.</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnerbrady">Rentner-Brady Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnerbrown">Rentner-Brown Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnercygan">Rentner-Cygan Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnerhyde">Rentner-Hyde Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="vacations">Vacations</button>
     <button class="filter-btn video-filter-btn" data-vfilter="weddings">Weddings</button>
   </div>
   <div class="video-grid" id="video-grid">
@@ -3872,33 +3875,34 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     <h2 class="upload-heading">Upload Photos</h2>
     <p class="upload-subtext">Select a category, choose your photos or PDFs, and they'll appear in the gallery.</p>
     <div class="upload-controls">
-      <select id="upload-tag" class="upload-select">
-        <option value="">— Choose a category —</option>
-        <option value="all">All</option>
-        <option value="auntcarrie">Aunt Carrie</option>
-        <option value="auntdonna">Aunt Donna</option>
-        <option value="auntdorothy">Aunt Dorothy</option>
-        <option value="birthdays">Birthdays</option>
-        <option value="bromley">Bromley Family</option>
-        <option value="brown">Brown Family</option>
-        <option value="burny">Burny Family</option>
-        <option value="christmas">Christmas</option>
-        <option value="daddio">Daddio (Big Rick)</option>
-        <option value="gasstation">Gas Station</option>
-        <option value="grandma">Grandma</option>
-        <option value="grandpa">Grandpa</option>
-        <option value="grandpawar">Grandpa War Photos and Documents</option>
-        <option value="pregrandma">Pre-Grandma (1929)</option>
-        <option value="pregrandpa">Pre-Grandpa (1926)</option>
-        <option value="hart">Hart Family</option>
-        <option value="lakelawn">Lake Lawn</option>
-        <option value="madonna">Madonna</option>
-        <option value="rentnerbrady">Rentner-Brady Family</option>
-        <option value="rentnerbrown">Rentner-Brown Family</option>
-        <option value="rentnercygan">Rentner-Cygan Family</option>
-        <option value="rentnerhyde">Rentner-Hyde Family</option>
-        <option value="weddings">Weddings</option>
-      </select>
+      <div id="upload-tag-wrap" style="width:100%;border:1px solid #d8d6d0;background:#fafaf8;padding:0.5rem;max-height:160px;overflow-y:auto;font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.8rem;">
+        <p style="color:#aaa89e;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Choose one or more categories</p>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="auntcarrie"> Aunt Carrie</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="auntdonna"> Aunt Donna</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="auntdorothy"> Aunt Dorothy</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="birthdays"> Birthdays</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="bromley"> Bromley Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="brown"> Brown Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="burny"> Burny Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="christmas"> Christmas</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="daddio"> Daddio (Big Rick)</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="gasstation"> Gas Station</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="grandma"> Grandma</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="grandpa"> Grandpa</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="grandpawar"> Grandpa War Photos and Documents</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="hart"> Hart Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="lakelawn"> Lake Lawn</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="madonna"> Madonna</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="misc"> Misc.</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="pregrandma"> Pre-Grandma (1929)</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="pregrandpa"> Pre-Grandpa (1926)</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnerbrady"> Rentner-Brady Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnerbrown"> Rentner-Brown Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnercygan"> Rentner-Cygan Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnerhyde"> Rentner-Hyde Family</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="vacations"> Vacations</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="weddings"> Weddings</label>
+      </div>
       <label class="upload-file-btn">+ Choose Photos
         <input type="file" id="upload-input" accept="image/*,application/pdf" multiple style="display:none;">
       </label>
@@ -17986,7 +17990,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       btn.classList.add('active');
       const f = btn.dataset.filter;
       document.querySelectorAll('.gallery-item').forEach(item => {
-        const tags = item.dataset.tags || item.dataset.tag;
+        const tags = (item.dataset.tags || item.dataset.tag || '').split(',').map(t => t.trim());
         item.style.display = (f === 'all' || tags.includes(f)) ? '' : 'none';
       });
     });
@@ -18000,10 +18004,14 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       ? (isPdf ? src.replace('/upload/', '/upload/q_auto,f_jpg,pg_1/').replace(/\.pdf$/i, '.jpg') : src.replace('/upload/', '/upload/q_auto,f_auto/'))
       : src;
 
+    // Handle multiple tags (comma-separated)
+    const tagStr = Array.isArray(tag) ? tag.join(',') : (tag || 'all');
+    const primaryTag = tagStr.split(',')[0].trim();
+
     const item = document.createElement('div');
     item.className = 'gallery-item';
-    item.dataset.tag = tag;
-    item.dataset.tags = tag !== 'all' ? `${tag} all` : 'all';
+    item.dataset.tag = primaryTag;
+    item.dataset.tags = tagStr;
     item.dataset.src = src;
     item.dataset.caption = photoCaption || '';
     const img = document.createElement('img');
@@ -18016,8 +18024,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const badge = isPdf ? '<span style="position:absolute;top:8px;left:8px;background:#e63030;color:white;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.6rem;letter-spacing:0.1em;padding:2px 6px;text-transform:uppercase;">PDF</span>' : '';
     const caption = document.createElement('div');
     caption.className = 'caption';
-    const label = document.querySelector(`.filter-btn[data-filter="${tag}"]`);
-    const captionText = photoCaption || (label ? label.textContent : tag);
+    const label = document.querySelector(`.filter-btn[data-filter="${primaryTag}"]`);
+    const captionText = photoCaption || (label ? label.textContent : primaryTag);
     caption.innerHTML = `<span class="caption-text">${captionText}</span>`;
 
     // Edit button
@@ -18043,7 +18051,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
 
   // EDIT MODAL
   const editModal = document.getElementById('edit-modal');
-  const editTagSelect = document.getElementById('edit-tag-select');
+  // edit tag now uses checkboxes in #edit-tag-wrap
   const editModalStatus = document.getElementById('edit-modal-status');
   let currentEditItem = null;
   let currentEditSrc = null;
@@ -18051,7 +18059,11 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   function openEditModal(item, src, tag) {
     currentEditItem = item;
     currentEditSrc = src;
-    editTagSelect.value = tag;
+    // Uncheck all then check current tags
+    document.querySelectorAll('#edit-tag-wrap input').forEach(cb => {
+      const tags = (item.dataset.tags || tag || '').split(',').map(t => t.trim());
+      cb.checked = tags.includes(cb.value);
+    });
     document.getElementById('edit-caption-input').value = item.dataset.caption || '';
     editModalStatus.textContent = '';
     editModal.classList.add('open');
@@ -18079,7 +18091,9 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   });
 
   document.getElementById('edit-modal-save').addEventListener('click', async () => {
-    const newTag = editTagSelect.value;
+    const newTags = [...document.querySelectorAll('#edit-tag-wrap input:checked')].map(cb => cb.value);
+    if (!newTags.length) { editModalStatus.textContent = 'Please choose at least one category.'; return; }
+    const newTag = newTags.join(',');
     editModalStatus.textContent = 'Saving...';
     try {
       const docId = btoa(currentEditSrc).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
@@ -18087,10 +18101,10 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       await setDoc(doc(db, 'photos', docId), { src: currentEditSrc, tag: newTag, isPdf: !!currentEditItem.dataset.isPdf, caption: newCaption, uploadedAt: Date.now() });
 
       // Update the gallery item
-      currentEditItem.dataset.tag = newTag;
-      currentEditItem.dataset.tags = newTag !== 'all' ? `${newTag} all` : 'all';
+      currentEditItem.dataset.tag = newTags[0];
+      currentEditItem.dataset.tags = newTag;
       currentEditItem.dataset.caption = newCaption;
-      const labelEl = document.querySelector(`.filter-btn[data-filter="${newTag}"]`);
+      const labelEl = document.querySelector(`.filter-btn[data-filter="${newTags[0]}"]`);
       const captionSpan = currentEditItem.querySelector('.caption-text');
       if (captionSpan) captionSpan.textContent = newCaption || (labelEl ? labelEl.textContent : newTag);
 
@@ -18106,25 +18120,16 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   async function savePhotoToIndex(src, tag, isPdf, caption) {
     try {
       const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
-      await setDoc(doc(db, 'photos', docId), { src, tag, isPdf: !!isPdf, caption: caption || '', uploadedAt: Date.now() });
+      await setDoc(doc(db, 'photos', docId), { src, tag: Array.isArray(tag) ? tag.join(',') : tag, isPdf: !!isPdf, caption: caption || '', uploadedAt: Date.now() });
     } catch(e) { console.warn('Firestore save error:', e); }
   }
 
   // FIRESTORE LOAD - deduplicate by src URL
-  function mlog(msg) {
-    const el = document.getElementById('mobile-log');
-    if (el) { el.style.display='block'; el.innerHTML += msg + '<br>'; }
-    console.log(msg);
-  }
-
   async function loadSavedPhotos() {
     const spinner = document.getElementById('gallery-spinner');
     try {
-      mlog('Starting load...');
       if (spinner) spinner.innerHTML = '<div class="spinner-ring"></div><p>Connecting to database...</p>';
-      mlog('Firestore connected');
       const snapshot = await getDocs(collection(db, 'photos'));
-      mlog('Found ' + snapshot.size + ' photos');
       if (spinner) spinner.innerHTML = '<div class="spinner-ring"></div><p>Loading ' + snapshot.size + ' photos...</p>';
       const seen = new Set();
       snapshot.forEach(docSnap => {
@@ -18142,7 +18147,6 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
         }
       }
     } catch(e) {
-      mlog('ERROR: ' + e.message);
       if (spinner) spinner.innerHTML = '<p style="color:#e63030;font-size:0.8rem;font-family:Helvetica Neue,Arial,sans-serif;padding:1rem;">Error: ' + e.message + '</p>';
     }
   }
@@ -18168,8 +18172,9 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   const status = document.getElementById('upload-status');
 
   async function handleFiles(files) {
-    const tag = document.getElementById('upload-tag').value;
-    if (!tag) { status.textContent = 'Please choose a category first.'; return; }
+    const checked = [...document.querySelectorAll('#upload-tag-wrap input:checked')].map(cb => cb.value);
+    if (!checked.length) { status.textContent = 'Please choose at least one category.'; return; }
+    const tag = checked.join(',');
     status.textContent = 'Uploading...';
     let count = 0;
     for (const file of Array.from(files)) {
