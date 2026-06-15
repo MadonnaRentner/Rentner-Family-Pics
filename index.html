@@ -1045,6 +1045,7 @@
   }
 
   function addToGallery(src, tag, isPdf) {
+    loadedSrcs.add(src);
     let qualitySrc;
     if (src.includes('res.cloudinary.com')) {
       if (isPdf) {
@@ -1106,7 +1107,7 @@
         const data = await uploadToCloudinary(file, tag);
         const src = data.secure_url;
 
-        // Preview thumbnail
+        // Preview thumbnail only — don't add to gallery yet
         const thumb = document.createElement('img');
         thumb.src = isPdf
           ? src.replace('/upload/', '/upload/q_auto,f_jpg,pg_1/').replace('.pdf', '.jpg')
@@ -1114,8 +1115,9 @@
         thumb.style.cssText = 'width:80px;height:80px;object-fit:cover;border:2px solid #e63030;';
         preview.appendChild(thumb);
 
+        // Save to Firestore AND add to gallery once
+        await savePhotoToIndex(src, tag, isPdf);
         addToGallery(src, tag, isPdf);
-        savePhotoToIndex(src, tag, isPdf);
         count++;
         status.textContent = `Uploading... ${count} done`;
       } catch (err) {
@@ -1123,7 +1125,7 @@
       }
     }
     if (count > 0) {
-      status.textContent = `✓ ${count} file${count > 1 ? 's' : ''} saved permanently to Cloudinary!`;
+      status.textContent = `✓ ${count} file${count > 1 ? 's' : ''} saved permanently!`;
     }
   }
 
@@ -1312,13 +1314,18 @@
     }
   }
 
+  const loadedSrcs = new Set();
+
   // LOAD ALL PHOTOS FROM FIRESTORE ON PAGE LOAD
   async function loadSavedPhotos() {
     try {
       const snapshot = await getDocs(collection(db, 'photos'));
       snapshot.forEach(doc => {
         const { src, tag, isPdf } = doc.data();
-        addToGallery(src, tag, isPdf);
+        if (!loadedSrcs.has(src)) {
+          loadedSrcs.add(src);
+          addToGallery(src, tag, isPdf);
+        }
       });
     } catch (e) {
       console.warn('Could not load photos from Firestore:', e);
