@@ -186,9 +186,9 @@
       .filter-btn { font-size: 0.7rem; padding: 0.35rem 0.75rem; }
 
       /* GALLERY */
-      .gallery { padding: 0.75rem 0.5rem 2rem; columns: 3; column-gap: 4px; }
-      .gallery-item { margin-bottom: 4px; }
-      .gallery-item img { object-fit: cover; }
+      .gallery { padding: 0.75rem 0.5rem 2rem !important; columns: 3 !important; column-gap: 4px !important; display: block !important; }
+      .gallery-item { margin-bottom: 4px !important; break-inside: avoid !important; width: 100% !important; }
+      .gallery-item img { width: 100% !important; height: auto !important; display: block !important; }
       .edit-btn { font-size: 0.55rem; padding: 3px 5px; }
 
       /* VIDEO SECTION */
@@ -3736,6 +3736,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <button class="filter-btn" data-filter="grandma">Grandma</button>
   <button class="filter-btn" data-filter="grandpa">Grandpa</button>
   <button class="filter-btn" data-filter="grandpawar">Grandpa War Photos and Documents</button>
+  <button class="filter-btn" data-filter="pregrandma">Pre-Grandma (1929)</button>
+  <button class="filter-btn" data-filter="pregrandpa">Pre-Grandpa (1926)</button>
   <button class="filter-btn" data-filter="hart">Hart Family</button>
   <button class="filter-btn" data-filter="lakelawn">Lake Lawn</button>
   <button class="filter-btn" data-filter="madonna">Madonna</button>
@@ -3782,6 +3784,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     <button class="filter-btn video-filter-btn" data-vfilter="grandma">Grandma</button>
     <button class="filter-btn video-filter-btn" data-vfilter="grandpa">Grandpa</button>
     <button class="filter-btn video-filter-btn" data-vfilter="grandpawar">Grandpa War Photos and Documents</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="pregrandma">Pre-Grandma (1929)</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="pregrandpa">Pre-Grandpa (1926)</button>
     <button class="filter-btn video-filter-btn" data-vfilter="hart">Hart Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="lakelawn">Lake Lawn</button>
     <button class="filter-btn video-filter-btn" data-vfilter="madonna">Madonna</button>
@@ -3838,6 +3842,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
       <option value="grandma">Grandma</option>
       <option value="grandpa">Grandpa</option>
       <option value="grandpawar">Grandpa War Photos and Documents</option>
+      <option value="pregrandma">Pre-Grandma (1929)</option>
+      <option value="pregrandpa">Pre-Grandpa (1926)</option>
       <option value="hart">Hart Family</option>
       <option value="lakelawn">Lake Lawn</option>
       <option value="madonna">Madonna</option>
@@ -3882,6 +3888,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         <option value="grandma">Grandma</option>
         <option value="grandpa">Grandpa</option>
         <option value="grandpawar">Grandpa War Photos and Documents</option>
+        <option value="pregrandma">Pre-Grandma (1929)</option>
+        <option value="pregrandpa">Pre-Grandpa (1926)</option>
         <option value="hart">Hart Family</option>
         <option value="lakelawn">Lake Lawn</option>
         <option value="madonna">Madonna</option>
@@ -18001,7 +18009,10 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const img = document.createElement('img');
     img.src = qualitySrc;
     img.style.cssText = 'width:100%; display:block;';
-    img.onerror = () => { img.src = src; }; // fallback to original URL
+    img.onerror = () => { 
+      // Try original URL as fallback, if that also fails hide the item
+      if (img.src !== src) { img.src = src; } else { item.style.display = "none"; }
+    };
     const badge = isPdf ? '<span style="position:absolute;top:8px;left:8px;background:#e63030;color:white;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.6rem;letter-spacing:0.1em;padding:2px 6px;text-transform:uppercase;">PDF</span>' : '';
     const caption = document.createElement('div');
     caption.className = 'caption';
