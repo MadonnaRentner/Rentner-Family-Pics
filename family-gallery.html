@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Family Gallery</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #fafaf8;
+      color: #1a1a18;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+      border-bottom: 1px solid #e8e6e0;
+      background: #fafaf8;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-logo {
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 300;
+      color: #1a1a18;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #888880;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #1a1a18; }
+
+    /* HERO */
+    .hero {
+      padding: 6rem 3rem 4rem;
+      max-width: 700px;
+    }
+    .hero-eyebrow {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #aaa89e;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: #1a1a18;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: #888880;
+    }
+    .hero p {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.95rem;
+      color: #777770;
+      line-height: 1.75;
+      max-width: 420px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      margin: 0 3rem;
+      border: none;
+      border-top: 1px solid #e8e6e0;
+    }
+
+    /* FILTERS */
+    .filters {
+      display: flex;
+      gap: 0.75rem;
+      padding: 2rem 3rem;
+      align-items: center;
+    }
+    .filter-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #aaa89e;
+      margin-right: 0.5rem;
+    }
+    .filter-btn {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      padding: 0.4rem 1rem;
+      border: 1px solid #d8d6d0;
+      background: transparent;
+      color: #888880;
+      cursor: pointer;
+      border-radius: 2rem;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: #1a1a18; color: #1a1a18; }
+    .filter-btn.active { background: #1a1a18; color: #fafaf8; border-color: #1a1a18; }
+
+    /* GALLERY */
+    .gallery {
+      padding: 1rem 3rem 4rem;
+      columns: 3;
+      column-gap: 12px;
+    }
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .gallery-item img {
+      display: block;
+      width: 100%;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.03); }
+    .gallery-item .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0; right: 0;
+      padding: 1rem;
+      background: linear-gradient(transparent, rgba(20,20,18,0.6));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .gallery-item:hover .caption { opacity: 1; }
+    .caption-text {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* PLACEHOLDER IMAGES */
+    .placeholder {
+      background: #ede9e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .placeholder svg { opacity: 0.25; }
+
+    /* LIGHTBOX */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20,20,18,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-img {
+      max-width: 80vw;
+      max-height: 85vh;
+      object-fit: contain;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 1.5rem;
+      cursor: pointer;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 200;
+      line-height: 1;
+      padding: 0.5rem;
+    }
+    .lightbox-close:hover { color: white; }
+    .lightbox-caption {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid #e8e6e0;
+      padding: 2.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-text {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.8rem;
+      color: #aaa89e;
+      letter-spacing: 0.05em;
+    }
+    .upload-btn {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.5rem;
+      background: #1a1a18;
+      color: #fafaf8;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .upload-btn:hover { opacity: 0.8; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.25rem 1.5rem; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .divider, .filters { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .gallery { padding: 1rem 1.5rem 3rem; columns: 2; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">The Family Album</span>
+  <ul class="nav-links">
+    <li><a href="#">Gallery</a></li>
+    <li><a href="#">Albums</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <p class="hero-eyebrow">Est. 2010 — Ongoing</p>
+  <h1>Moments worth<br><em>keeping forever.</em></h1>
+  <p>A private collection of photographs, milestones, and ordinary days made extraordinary by the people in them.</p>
+</section>
+
+<hr class="divider">
+
+<div class="filters">
+  <span class="filter-label">Filter</span>
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="summer">Summer</button>
+  <button class="filter-btn" data-filter="holidays">Holidays</button>
+  <button class="filter-btn" data-filter="milestones">Milestones</button>
+  <button class="filter-btn" data-filter="everyday">Everyday</button>
+</div>
+
+<div class="gallery" id="gallery">
+
+  <!-- Row of varied heights for masonry feel -->
+
+  <div class="gallery-item" data-tag="milestones">
+    <div class="placeholder" style="height:320px;">
+      <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><path stroke="#1a1a18" stroke-width="1.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke="#1a1a18" stroke-width="1.2"/></svg>
+    </div>
+    <div class="caption"><span class="caption-text">First birthday</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="summer">
+    <div class="placeholder" style="height:200px; background: #e5dfd4;"></div>
+    <div class="caption"><span class="caption-text">Beach trip, July</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="holidays">
+    <div class="placeholder" style="height:260px; background: #ece6db;"></div>
+    <div class="caption"><span class="caption-text">Christmas morning</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="everyday">
+    <div class="placeholder" style="height:240px; background: #e8e3d8;"></div>
+    <div class="caption"><span class="caption-text">Sunday breakfast</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="summer">
+    <div class="placeholder" style="height:360px; background: #ddd7cc;"></div>
+    <div class="caption"><span class="caption-text">Lake house weekend</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="milestones">
+    <div class="placeholder" style="height:280px;"></div>
+    <div class="caption"><span class="caption-text">Graduation day</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="everyday">
+    <div class="placeholder" style="height:200px; background: #e8e3da;"></div>
+    <div class="caption"><span class="caption-text">Backyard afternoon</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="holidays">
+    <div class="placeholder" style="height:300px; background: #e3ddd2;"></div>
+    <div class="caption"><span class="caption-text">Thanksgiving 2023</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="summer">
+    <div class="placeholder" style="height:220px; background: #e0dace;"></div>
+    <div class="caption"><span class="caption-text">Garden picnic</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="milestones">
+    <div class="placeholder" style="height:340px; background: #ddd8ce;"></div>
+    <div class="caption"><span class="caption-text">New baby, January</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="everyday">
+    <div class="placeholder" style="height:210px;"></div>
+    <div class="caption"><span class="caption-text">Morning walk</span></div>
+  </div>
+
+  <div class="gallery-item" data-tag="holidays">
+    <div class="placeholder" style="height:270px; background: #e8e2d6;"></div>
+    <div class="caption"><span class="caption-text">Halloween costumes</span></div>
+  </div>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">✕</button>
+  <div class="placeholder lightbox-img" style="width:600px; height:400px;"></div>
+  <span class="lightbox-caption" id="lightbox-caption"></span>
+</div>
+
+<footer>
+  <span class="footer-text">© 2024 The Family Album · Private collection</span>
+  <button class="upload-btn">+ Add Photos</button>
+</footer>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const items = document.querySelectorAll('.gallery-item');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      items.forEach(item => {
+        const show = f === 'all' || item.dataset.tag === f;
+        item.style.display = show ? '' : 'none';
+      });
+    });
+  });
+
+  const lightbox = document.getElementById('lightbox');
+  const lbCaption = document.getElementById('lightbox-caption');
+
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      lbCaption.textContent = item.querySelector('.caption-text')?.textContent || '';
+      lightbox.classList.add('open');
+    });
+  });
+
+  document.getElementById('lightbox-close').addEventListener('click', () => {
+    lightbox.classList.remove('open');
+  });
+
+  lightbox.addEventListener('click', e => {
+    if (e.target === lightbox) lightbox.classList.remove('open');
+  });
+</script>
+
+</body>
+</html>
