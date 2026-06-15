@@ -72,7 +72,13 @@
     /* HERO */
     .hero {
       padding: 6rem 3rem 4rem;
-      max-width: 700px;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2.5rem;
+      flex-wrap: wrap;
     }
     .hero-eyebrow {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -178,8 +184,8 @@
     .placeholder {
       background: #ede9e0;
       display: flex;
-      align-items: right;
-      justify-content: right;
+      align-items: center;
+      justify-content: center;
     }
     .placeholder svg { opacity: 0.25; }
 
@@ -452,17 +458,22 @@
     }
     .upload-btn:hover { opacity: 0.8; }
 
+    .hero-photo-placeholder:hover,
+    .about-photo-placeholder:hover {
+      background: #e5dfd4;
+    }
+
     /* HERO PHOTO */
     .hero-photo-wrap { flex-shrink: 0; }
     .hero-photo {
-      width: 220px;
-      height: 260px;
+      width: 340px;
+      height: 220px;
       object-fit: cover;
       display: block;
     }
     .hero-photo-placeholder {
-      width: 220px;
-      height: 260px;
+      width: 340px;
+      height: 220px;
       background: #ede9e0;
       display: flex;
       flex-direction: column;
@@ -629,7 +640,7 @@
   </ul>
 </nav>
 
-<section class="hero" style="display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;">
+<section class="hero" style="display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; width: 100%; box-sizing: border-box;">
   <div>
     <p class="hero-eyebrow">Est. 1950 — Ongoing</p>
     <h1>Rentner-Brown<br><em>Family Photos</em></h1>
@@ -641,21 +652,23 @@
         To add your photo, replace the div below with:
         <img src="your-photo.jpg" alt="Family photo" class="hero-photo">
       -->
-      <div class="hero-photo-placeholder">
+      <div class="hero-photo-placeholder" id="hero-placeholder" onclick="document.getElementById('hero-file-input').click()" style="cursor:pointer;">
+        <input type="file" id="hero-file-input" accept="image/*" style="display:none;">
         <svg width="40" height="40" fill="none" viewBox="0 0 24 24"><path stroke="#1a1a18" stroke-width="1.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke="#1a1a18" stroke-width="1.2"/></svg>
-        <span>Add a photo here</span>
+        <span>Click to upload photo</span>
+        <span style="font-size:0.6rem; opacity:0.6;">JPG, PNG supported</span>
       </div>
       <!-- Squiggly red border -->
-      <svg class="squiggle" viewBox="0 0 256 316" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="squiggle" viewBox="0 0 356 236" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="
           M8,8
-          Q14,4 20,8 Q26,12 32,8 Q38,4 44,8 Q50,12 56,8 Q62,4 68,8 Q74,12 80,8 Q86,4 92,8 Q98,12 104,8 Q110,4 116,8 Q122,12 128,8 Q134,4 140,8 Q146,12 152,8 Q158,4 164,8 Q170,12 176,8 Q182,4 188,8 Q194,12 200,8 Q206,4 212,8 Q218,12 224,8 Q230,4 236,8 Q242,12 248,8
-          L248,8
-          Q252,14 248,20 Q244,26 248,32 Q252,38 248,44 Q244,50 248,56 Q252,62 248,68 Q244,74 248,80 Q252,86 248,92 Q244,98 248,104 Q252,110 248,116 Q244,122 248,128 Q252,134 248,140 Q244,146 248,152 Q252,158 248,164 Q244,170 248,176 Q252,182 248,188 Q244,194 248,200 Q252,206 248,212 Q244,218 248,224 Q252,230 248,236 Q244,242 248,248 Q252,254 248,260 Q244,266 248,272 Q252,278 248,284 Q244,290 248,296 Q252,302 248,308
-          L248,308
-          Q242,312 236,308 Q230,304 224,308 Q218,312 212,308 Q206,304 200,308 Q194,312 188,308 Q182,304 176,308 Q170,312 164,308 Q158,304 152,308 Q146,312 140,308 Q134,304 128,308 Q122,312 116,308 Q110,304 104,308 Q98,312 92,308 Q86,304 80,308 Q74,312 68,308 Q62,304 56,308 Q50,312 44,308 Q38,304 32,308 Q26,312 20,308 Q14,304 8,308
-          L8,308
-          Q4,302 8,296 Q12,290 8,284 Q4,278 8,272 Q12,266 8,260 Q4,254 8,248 Q12,242 8,236 Q4,230 8,224 Q12,218 8,212 Q4,206 8,200 Q12,194 8,188 Q4,182 8,176 Q12,170 8,164 Q4,158 8,152 Q12,146 8,140 Q4,134 8,128 Q12,122 8,116 Q4,110 8,104 Q12,98 8,92 Q4,86 8,80 Q12,74 8,68 Q4,62 8,56 Q12,50 8,44 Q4,38 8,32 Q12,26 8,20 Q4,14 8,8 Z
+          Q14,4 20,8 Q26,12 32,8 Q38,4 44,8 Q50,12 56,8 Q62,4 68,8 Q74,12 80,8 Q86,4 92,8 Q98,12 104,8 Q110,4 116,8 Q122,12 128,8 Q134,4 140,8 Q146,12 152,8 Q158,4 164,8 Q170,12 176,8 Q182,4 188,8 Q194,12 200,8 Q206,4 212,8 Q218,12 224,8 Q230,4 236,8 Q242,12 248,8 Q254,4 260,8 Q266,12 272,8 Q278,4 284,8 Q290,12 296,8 Q302,4 308,8 Q314,12 320,8 Q326,4 332,8 Q338,12 344,8 Q350,4 348,8
+          L348,8
+          Q352,14 348,20 Q344,26 348,32 Q352,38 348,44 Q344,50 348,56 Q352,62 348,68 Q344,74 348,80 Q352,86 348,92 Q344,98 348,104 Q352,110 348,116 Q344,122 348,128 Q352,134 348,140 Q344,146 348,152 Q352,158 348,164 Q344,170 348,176 Q352,182 348,188 Q344,194 348,200 Q352,206 348,212 Q344,218 348,228
+          L348,228
+          Q342,232 336,228 Q330,224 324,228 Q318,232 312,228 Q306,224 300,228 Q294,232 288,228 Q282,224 276,228 Q270,232 264,228 Q258,224 252,228 Q246,232 240,228 Q234,224 228,228 Q222,232 216,228 Q210,224 204,228 Q198,232 192,228 Q186,224 180,228 Q174,232 168,228 Q162,224 156,228 Q150,232 144,228 Q138,224 132,228 Q126,232 120,228 Q114,224 108,228 Q102,232 96,228 Q90,224 84,228 Q78,232 72,228 Q66,224 60,228 Q54,232 48,228 Q42,224 36,228 Q30,232 24,228 Q18,224 12,228 Q6,232 8,228
+          L8,228
+          Q4,222 8,216 Q12,210 8,204 Q4,198 8,192 Q12,186 8,180 Q4,174 8,168 Q12,162 8,156 Q4,150 8,144 Q12,138 8,132 Q4,126 8,120 Q12,114 8,108 Q4,102 8,96 Q12,90 8,84 Q4,78 8,72 Q12,66 8,60 Q4,54 8,48 Q12,42 8,36 Q4,30 8,24 Q12,18 8,12 Q4,6 8,8 Z
         " stroke="#e63030" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </div>
@@ -669,6 +682,7 @@
   <button class="filter-btn active" data-filter="all">All</button>
   <button class="filter-btn" data-filter="auntcarrie">Aunt Carrie</button>
   <button class="filter-btn" data-filter="auntdonna">Aunt Donna</button>
+  <button class="filter-btn" data-filter="auntdorothy">Aunt Dorothy</button>
   <button class="filter-btn" data-filter="birthdays">Birthdays</button>
   <button class="filter-btn" data-filter="bromley">Bromley Family</button>
   <button class="filter-btn" data-filter="brown">Brown Family</button>
@@ -689,7 +703,10 @@
 </div>
 
 <div class="gallery" id="gallery">
-
+  <div id="gallery-empty" style="grid-column:1/-1; text-align:center; padding:4rem 2rem; font-family:'Helvetica Neue',Arial,sans-serif; color:#bbb;">
+    <svg width="48" height="48" fill="none" viewBox="0 0 24 24" style="margin-bottom:1rem; opacity:0.3;"><path stroke="#1a1a18" stroke-width="1.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke="#1a1a18" stroke-width="1.2"/></svg>
+    <p style="font-size:0.85rem; letter-spacing:0.05em;">No photos yet — scroll down to upload your first one!</p>
+  </div>
 </div>
 
 <!-- Lightbox -->
@@ -707,6 +724,32 @@
       <h2>yippeee</h2>
     </div>
   </div>
+
+  <div class="filters" style="flex-wrap: wrap; padding: 0 0 1.5rem 0;">
+    <span class="filter-label">Filter</span>
+    <button class="filter-btn video-filter-btn active" data-vfilter="all">All</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="auntcarrie">Aunt Carrie</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="auntdonna">Aunt Donna</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="auntdorothy">Aunt Dorothy</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="birthdays">Birthdays</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="bromley">Bromley Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="brown">Brown Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="burny">Burny Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="christmas">Christmas</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="daddio">Daddio (Big Rick)</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="gasstation">Gas Station</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="grandma">Grandma</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="grandpa">Grandpa</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="grandpawar">Grandpa War Photos and Documents</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="hart">Hart Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="lakelawn">Lake Lawn</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="madonna">Madonna</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="rentnerbrady">Rentner-Brady Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="rentnercygan">Rentner-Cygan Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="rentnerhyde">Rentner-Hyde Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="weddings">Weddings</button>
+  </div>
+
   <div class="video-grid" id="video-grid">
     <div class="video-empty" id="video-empty">
       <svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg>
@@ -725,9 +768,11 @@
             To add your photo, replace the div below with:
             <img src="your-photo.jpg" alt="Family" class="about-photo">
           -->
-          <div class="about-photo-placeholder">
+          <div class="about-photo-placeholder" id="about-placeholder" onclick="document.getElementById('about-file-input').click()" style="cursor:pointer;">
+            <input type="file" id="about-file-input" accept="image/*" style="display:none;">
             <svg width="40" height="40" fill="none" viewBox="0 0 24 24"><path stroke="#1a1a18" stroke-width="1.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke="#1a1a18" stroke-width="1.2"/></svg>
-            <span>Add a photo here</span>
+            <span>Click to upload photo</span>
+            <span style="font-size:0.6rem; opacity:0.6;">JPG, PNG supported</span>
           </div>
           <!-- Squiggly red border -->
           <svg class="squiggle" viewBox="0 0 256 316" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -765,6 +810,7 @@
         <option value="all">All</option>
         <option value="auntcarrie">Aunt Carrie</option>
         <option value="auntdonna">Aunt Donna</option>
+        <option value="auntdorothy">Aunt Dorothy</option>
         <option value="birthdays">Birthdays</option>
         <option value="bromley">Bromley Family</option>
         <option value="brown">Brown Family</option>
@@ -813,6 +859,30 @@
     <!-- Cloudinary video upload -->
     <div class="vtab-panel" id="cloudinary-video">
       <div class="upload-controls">
+        <select id="video-tag-input" class="upload-select">
+          <option value="">— Choose a category —</option>
+          <option value="all">All</option>
+          <option value="auntcarrie">Aunt Carrie</option>
+          <option value="auntdonna">Aunt Donna</option>
+          <option value="auntdorothy">Aunt Dorothy</option>
+          <option value="birthdays">Birthdays</option>
+          <option value="bromley">Bromley Family</option>
+          <option value="brown">Brown Family</option>
+          <option value="burny">Burny Family</option>
+          <option value="christmas">Christmas</option>
+          <option value="daddio">Daddio (Big Rick)</option>
+          <option value="gasstation">Gas Station</option>
+          <option value="grandma">Grandma</option>
+          <option value="grandpa">Grandpa</option>
+          <option value="grandpawar">Grandpa War Photos and Documents</option>
+          <option value="hart">Hart Family</option>
+          <option value="lakelawn">Lake Lawn</option>
+          <option value="madonna">Madonna</option>
+          <option value="rentnerbrady">Rentner-Brady Family</option>
+          <option value="rentnercygan">Rentner-Cygan Family</option>
+          <option value="rentnerhyde">Rentner-Hyde Family</option>
+          <option value="weddings">Weddings</option>
+        </select>
         <input type="text" id="video-title-input" class="upload-select" placeholder="Video title (e.g. Christmas 1987)">
         <label class="upload-file-btn">
           + Choose Video
@@ -833,6 +903,30 @@
         Upload your video to <a href="https://vimeo.com" target="_blank" style="color:#e63030;">Vimeo.com</a> (free account), then paste the video link here. Set it to <strong>unlisted</strong> so only people with the link can see it.
       </p>
       <div class="upload-controls">
+        <select id="vimeo-tag" class="upload-select">
+          <option value="">— Choose a category —</option>
+          <option value="all">All</option>
+          <option value="auntcarrie">Aunt Carrie</option>
+          <option value="auntdonna">Aunt Donna</option>
+          <option value="auntdorothy">Aunt Dorothy</option>
+          <option value="birthdays">Birthdays</option>
+          <option value="bromley">Bromley Family</option>
+          <option value="brown">Brown Family</option>
+          <option value="burny">Burny Family</option>
+          <option value="christmas">Christmas</option>
+          <option value="daddio">Daddio (Big Rick)</option>
+          <option value="gasstation">Gas Station</option>
+          <option value="grandma">Grandma</option>
+          <option value="grandpa">Grandpa</option>
+          <option value="grandpawar">Grandpa War Photos and Documents</option>
+          <option value="hart">Hart Family</option>
+          <option value="lakelawn">Lake Lawn</option>
+          <option value="madonna">Madonna</option>
+          <option value="rentnerbrady">Rentner-Brady Family</option>
+          <option value="rentnercygan">Rentner-Cygan Family</option>
+          <option value="rentnerhyde">Rentner-Hyde Family</option>
+          <option value="weddings">Weddings</option>
+        </select>
         <input type="text" id="vimeo-title" class="upload-select" placeholder="Video title (e.g. Summer 1975)">
         <input type="text" id="vimeo-url" class="upload-select" placeholder="Vimeo URL (e.g. https://vimeo.com/123456789)" style="flex:2;">
         <button class="upload-file-btn" id="vimeo-add-btn">+ Add Video</button>
@@ -923,6 +1017,7 @@
     formData.append('upload_preset', UPLOAD_PRESET);
     formData.append('folder', 'family-gallery');
     formData.append('tags', tag);
+    formData.append('quality', 'auto:best');
 
     const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
       method: 'POST',
@@ -933,26 +1028,40 @@
   }
 
   function addToGallery(src, tag) {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.dataset.tag = tag;
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.width = '100%';
-    img.style.display = 'block';
-    const caption = document.createElement('div');
-    caption.className = 'caption';
-    const label = document.querySelector(`.filter-btn[data-filter="${tag}"]`);
-    caption.innerHTML = `<span class="caption-text">${label ? label.textContent : tag}</span>`;
-    item.appendChild(img);
-    item.appendChild(caption);
-    gallery.appendChild(item);
-    item.addEventListener('click', () => {
-      lbCaption.textContent = item.querySelector('.caption-text')?.textContent || '';
-      lightbox.classList.add('open');
-    });
-    item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-    item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    // Build high-quality Cloudinary URL if it's a Cloudinary image
+    const qualitySrc = src.includes('res.cloudinary.com')
+      ? src.replace('/upload/', '/upload/q_auto:best,f_auto/')
+      : src;
+
+    const addItem = (filterTag) => {
+      const item = document.createElement('div');
+      item.className = 'gallery-item';
+      item.dataset.tag = filterTag;
+      const img = document.createElement('img');
+      img.src = qualitySrc;
+      img.style.width = '100%';
+      img.style.display = 'block';
+      const caption = document.createElement('div');
+      caption.className = 'caption';
+      const label = document.querySelector(`.filter-btn[data-filter="${tag}"]`);
+      caption.innerHTML = `<span class="caption-text">${label ? label.textContent : tag}</span>`;
+      item.appendChild(img);
+      item.appendChild(caption);
+      gallery.appendChild(item);
+      item.addEventListener('click', () => {
+        lbCaption.textContent = item.querySelector('.caption-text')?.textContent || '';
+        lightbox.classList.add('open');
+      });
+      item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+      item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    };
+
+    addItem(tag);
+    if (tag !== 'all') addItem('all');
+
+    // Hide empty state
+    const emptyState = document.getElementById('gallery-empty');
+    if (emptyState) emptyState.remove();
   }
 
   async function handleFiles(files) {
@@ -993,17 +1102,66 @@
     handleFiles(e.dataTransfer.files);
   });
 
+  // HERO PHOTO UPLOAD
+  document.getElementById('hero-file-input').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const placeholder = document.getElementById('hero-placeholder');
+    placeholder.innerHTML = '<span style="font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;color:#aaa;">Uploading...</span>';
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', UPLOAD_PRESET);
+      formData.append('folder', 'family-hero');
+      formData.append('quality', 'auto:best');
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+      const data = await res.json();
+      const src = data.secure_url.replace('/upload/', '/upload/q_auto:best,f_auto/');
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'hero-photo';
+      placeholder.replaceWith(img);
+    } catch {
+      placeholder.innerHTML = '<span style="color:#e63030;font-size:0.75rem;">Upload failed — try again</span>';
+    }
+  });
+
+  // ABOUT PHOTO UPLOAD
+  document.getElementById('about-file-input').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const placeholder = document.getElementById('about-placeholder');
+    placeholder.innerHTML = '<span style="font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;color:#aaa;">Uploading...</span>';
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', UPLOAD_PRESET);
+      formData.append('folder', 'family-about');
+      formData.append('quality', 'auto:best');
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+      const data = await res.json();
+      const src = data.secure_url.replace('/upload/', '/upload/q_auto:best,f_auto/');
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'about-photo';
+      placeholder.replaceWith(img);
+    } catch {
+      placeholder.innerHTML = '<span style="color:#e63030;font-size:0.75rem;">Upload failed — try again</span>';
+    }
+  });
+
   // VIDEO UPLOAD — CLOUDINARY
   const videoInput = document.getElementById('video-upload-input');
   const videoDropZone = document.getElementById('video-drop-zone');
   const videoStatus = document.getElementById('video-upload-status');
   const videoGrid = document.getElementById('video-grid');
 
-  function addVideoCard(src, title, type) {
+  function addVideoCard(src, title, type, tag) {
     const empty = document.getElementById('video-empty');
     if (empty) empty.remove();
     const card = document.createElement('div');
     card.className = 'video-card';
+    card.dataset.vtag = tag || 'all';
     let mediaHTML = '';
     if (type === 'cloudinary') {
       mediaHTML = `<video controls style="width:100%; display:block; max-height:220px; background:#000;"><source src="${src}" type="video/mp4"></video>`;
@@ -1017,7 +1175,7 @@
       <div class="video-wrapper">${mediaHTML}</div>
       <div class="video-info">
         <p class="video-title">${title || 'Family Video'}</p>
-        <p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'}</p>
+        <p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${tag ? document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`)?.textContent || tag : 'All'}</p>
       </div>`;
     videoGrid.appendChild(card);
     card.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
@@ -1025,6 +1183,8 @@
   }
 
   async function uploadVideoToCloudinary(file) {
+    const tag = document.getElementById('video-tag-input').value;
+    if (!tag) { videoStatus.textContent = 'Please choose a category first.'; return; }
     const title = document.getElementById('video-title-input').value || file.name.replace(/\.[^.]+$/, '');
     videoStatus.textContent = 'Uploading video... this may take a moment.';
     const formData = new FormData();
@@ -1038,12 +1198,24 @@
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      addVideoCard(data.secure_url, title, 'cloudinary');
+      addVideoCard(data.secure_url, title, 'cloudinary', tag);
       videoStatus.textContent = '✓ Video uploaded and saved permanently!';
     } catch {
       videoStatus.textContent = 'Upload failed — check your file size (max 500MB on free plan).';
     }
   }
+
+  // VIDEO FILTERS
+  document.querySelectorAll('.video-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.video-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.vfilter;
+      document.querySelectorAll('.video-card').forEach(card => {
+        card.style.display = (f === 'all' || card.dataset.vtag === f) ? '' : 'none';
+      });
+    });
+  });
 
   videoInput.addEventListener('change', e => { if (e.target.files[0]) uploadVideoToCloudinary(e.target.files[0]); });
   videoDropZone.addEventListener('dragover', e => { e.preventDefault(); videoDropZone.classList.add('drag-over'); });
@@ -1068,12 +1240,14 @@
   document.getElementById('vimeo-add-btn').addEventListener('click', () => {
     const url = document.getElementById('vimeo-url').value.trim();
     const title = document.getElementById('vimeo-title').value.trim();
+    const tag = document.getElementById('vimeo-tag').value;
     const vimeoStatus = document.getElementById('vimeo-status');
     if (!url || !url.includes('vimeo.com')) {
       vimeoStatus.textContent = 'Please paste a valid Vimeo URL.';
       return;
     }
-    addVideoCard(url, title, 'vimeo');
+    if (!tag) { vimeoStatus.textContent = 'Please choose a category first.'; return; }
+    addVideoCard(url, title, 'vimeo', tag);
     document.getElementById('vimeo-url').value = '';
     document.getElementById('vimeo-title').value = '';
     vimeoStatus.textContent = '✓ Vimeo video added!';
