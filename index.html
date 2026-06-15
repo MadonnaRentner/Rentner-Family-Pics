@@ -940,6 +940,8 @@
 </section>
 
 <script type="module">
+  const loadedSrcs = new Set();
+
   // NAV PAGE SWITCHING
   const photosPage = document.getElementById('section-photos');
   const videosSection = document.getElementById('section-videos');
@@ -1323,7 +1325,6 @@
       snapshot.forEach(doc => {
         const { src, tag, isPdf } = doc.data();
         if (!loadedSrcs.has(src)) {
-          loadedSrcs.add(src);
           addToGallery(src, tag, isPdf);
         }
       });
