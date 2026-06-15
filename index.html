@@ -3815,7 +3815,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD-zn6Luf8qfIsR50MiJdkIWhbLtrLj0_k",
@@ -3946,6 +3946,9 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   // FIRESTORE SAVE
   async function savePhotoToIndex(src, tag, isPdf) {
     try {
+      const q = query(collection(db, 'photos'), where('src', '==', src));
+      const existing = await getDocs(q);
+      if (!existing.empty) return;
       await addDoc(collection(db, 'photos'), { src, tag, isPdf: !!isPdf, uploadedAt: Date.now() });
     } catch(e) { console.warn('Firestore save error:', e); }
   }
@@ -4008,7 +4011,10 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         thumb.style.cssText = 'width:80px;height:80px;object-fit:cover;border:2px solid #e63030;';
         preview.appendChild(thumb);
         await savePhotoToIndex(src, tag, isPdf);
-        addToGallery(src, tag, isPdf);
+        // Only add to gallery if not already shown (avoids duplicate on upload)
+        if (!loadedSrcs.has(src)) {
+          addToGallery(src, tag, isPdf);
+        }
         count++;
         status.textContent = `Uploading... ${count} done`;
       } catch(err) {
