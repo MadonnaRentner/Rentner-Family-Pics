@@ -94,6 +94,25 @@
     .vtab { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; letter-spacing: 0.06em; padding: 0.5rem 1.1rem; border: 1px solid #d8d6d0; background: transparent; color: #888880; cursor: pointer; border-radius: 2rem; transition: all 0.2s; }
     .vtab:hover { border-color: #e63030; color: #e63030; }
     .vtab.active { background: #e63030; color: white; border-color: #e63030; }
+    .gallery-item:hover .edit-btn { opacity: 1; }
+    .edit-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(20,20,18,0.75); color: white; border: none;
+      font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.65rem;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 8px;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s; z-index: 2;
+    }
+    .edit-btn:hover { background: #e63030; }
+    .edit-modal { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.85); z-index: 200; align-items: center; justify-content: center; }
+    .edit-modal.open { display: flex; }
+    .edit-modal-inner { background: #fafaf8; padding: 2rem; width: 340px; max-width: 90vw; }
+    .edit-modal h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: #1a1a18; margin-bottom: 1rem; }
+    .edit-modal select { width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; padding: 0.6rem; border: 1px solid #d8d6d0; background: #fff; color: #1a1a18; margin-bottom: 1rem; }
+    .edit-modal-btns { display: flex; gap: 0.5rem; }
+    .edit-modal-save { flex: 1; background: #e63030; color: white; border: none; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem; cursor: pointer; }
+    .edit-modal-cancel { flex: 1; background: transparent; color: #888880; border: 1px solid #d8d6d0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem; cursor: pointer; }
+    .edit-modal-status { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; color: #e63030; margin-top: 0.5rem; min-height: 1rem; }
+
     footer { border-top: 1px solid #e8e6e0; padding: 2.5rem 3rem; display: flex; justify-content: space-between; align-items: center; }
     .footer-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; color: #aaa89e; letter-spacing: 0.05em; }
     @media (max-width: 768px) {
@@ -3610,6 +3629,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <button class="filter-btn" data-filter="lakelawn">Lake Lawn</button>
   <button class="filter-btn" data-filter="madonna">Madonna</button>
   <button class="filter-btn" data-filter="rentnerbrady">Rentner-Brady Family</button>
+  <button class="filter-btn" data-filter="rentnerbrown">Rentner-Brown Family</button>
   <button class="filter-btn" data-filter="rentnercygan">Rentner-Cygan Family</button>
   <button class="filter-btn" data-filter="rentnerhyde">Rentner-Hyde Family</button>
   <button class="filter-btn" data-filter="weddings">Weddings</button>
@@ -3653,6 +3673,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     <button class="filter-btn video-filter-btn" data-vfilter="lakelawn">Lake Lawn</button>
     <button class="filter-btn video-filter-btn" data-vfilter="madonna">Madonna</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnerbrady">Rentner-Brady Family</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="rentnerbrown">Rentner-Brown Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnercygan">Rentner-Cygan Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="rentnerhyde">Rentner-Hyde Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="weddings">Weddings</button>
@@ -3685,6 +3706,44 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   </div>
 </section>
 
+<!-- EDIT MODAL -->
+<div class="edit-modal" id="edit-modal">
+  <div class="edit-modal-inner">
+    <h3>Edit Photo</h3>
+    <select id="edit-tag-select">
+      <option value="all">All</option>
+      <option value="auntcarrie">Aunt Carrie</option>
+      <option value="auntdonna">Aunt Donna</option>
+      <option value="auntdorothy">Aunt Dorothy</option>
+      <option value="birthdays">Birthdays</option>
+      <option value="bromley">Bromley Family</option>
+      <option value="brown">Brown Family</option>
+      <option value="burny">Burny Family</option>
+      <option value="christmas">Christmas</option>
+      <option value="daddio">Daddio (Big Rick)</option>
+      <option value="gasstation">Gas Station</option>
+      <option value="grandma">Grandma</option>
+      <option value="grandpa">Grandpa</option>
+      <option value="grandpawar">Grandpa War Photos and Documents</option>
+      <option value="hart">Hart Family</option>
+      <option value="lakelawn">Lake Lawn</option>
+      <option value="madonna">Madonna</option>
+      <option value="rentnerbrady">Rentner-Brady Family</option>
+      <option value="rentnerbrown">Rentner-Brown Family</option>
+      <option value="rentnercygan">Rentner-Cygan Family</option>
+      <option value="rentnerhyde">Rentner-Hyde Family</option>
+      <option value="weddings">Weddings</option>
+    </select>
+    <label style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:#aaa89e;display:block;margin-bottom:0.4rem;">Caption</label>
+    <input type="text" id="edit-caption-input" placeholder="Add a caption..." style="width:100%;font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.85rem;padding:0.6rem;border:1px solid #d8d6d0;background:#fff;color:#1a1a18;margin-bottom:1rem;box-sizing:border-box;">
+    <div class="edit-modal-btns">
+      <button class="edit-modal-save" id="edit-modal-save">Save</button>
+      <button class="edit-modal-cancel" id="edit-modal-cancel">Cancel</button>
+    </div>
+    <div class="edit-modal-status" id="edit-modal-status"></div>
+  </div>
+</div>
+
 <footer>
   <span class="footer-text">© Rentner-Brown Family Photos · Est. 1950</span>
 </footer>
@@ -3715,6 +3774,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         <option value="lakelawn">Lake Lawn</option>
         <option value="madonna">Madonna</option>
         <option value="rentnerbrady">Rentner-Brady Family</option>
+        <option value="rentnerbrown">Rentner-Brown Family</option>
         <option value="rentnercygan">Rentner-Cygan Family</option>
         <option value="rentnerhyde">Rentner-Hyde Family</option>
         <option value="weddings">Weddings</option>
@@ -3911,7 +3971,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   });
 
   // ADD TO GALLERY
-  function addToGallery(src, tag, isPdf) {
+  function addToGallery(src, tag, isPdf, photoCaption) {
     if (loadedSrcs.has(src)) return;
     loadedSrcs.add(src);
     let qualitySrc = src.includes('res.cloudinary.com')
@@ -3920,9 +3980,10 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 
     const item = document.createElement('div');
     item.className = 'gallery-item';
-    // Store both tags as data attributes so one item matches both filters
     item.dataset.tag = tag;
     item.dataset.tags = tag !== 'all' ? `${tag} all` : 'all';
+    item.dataset.src = src;
+    item.dataset.caption = photoCaption || '';
     const img = document.createElement('img');
     img.src = qualitySrc;
     img.style.cssText = 'width:100%; display:block;';
@@ -3930,9 +3991,21 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     const caption = document.createElement('div');
     caption.className = 'caption';
     const label = document.querySelector(`.filter-btn[data-filter="${tag}"]`);
-    caption.innerHTML = `<span class="caption-text">${label ? label.textContent : tag}</span>`;
+    const captionText = photoCaption || (label ? label.textContent : tag);
+    caption.innerHTML = `<span class="caption-text">${captionText}</span>`;
+
+    // Edit button
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = '✎ Edit';
+    editBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openEditModal(item, src, tag);
+    });
+
     item.appendChild(img);
     item.insertAdjacentHTML('beforeend', badge);
+    item.appendChild(editBtn);
     item.appendChild(caption);
     gallery.appendChild(item);
     item.addEventListener('click', () => { lbCaption.textContent = caption.textContent.trim(); lightbox.classList.add('open'); });
@@ -3943,13 +4016,57 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     if (empty) empty.remove();
   }
 
-  // FIRESTORE SAVE - use hashed URL as doc ID to prevent duplicates
-  async function savePhotoToIndex(src, tag, isPdf) {
+  // EDIT MODAL
+  const editModal = document.getElementById('edit-modal');
+  const editTagSelect = document.getElementById('edit-tag-select');
+  const editModalStatus = document.getElementById('edit-modal-status');
+  let currentEditItem = null;
+  let currentEditSrc = null;
+
+  function openEditModal(item, src, tag) {
+    currentEditItem = item;
+    currentEditSrc = src;
+    editTagSelect.value = tag;
+    document.getElementById('edit-caption-input').value = item.dataset.caption || '';
+    editModalStatus.textContent = '';
+    editModal.classList.add('open');
+  }
+
+  document.getElementById('edit-modal-cancel').addEventListener('click', () => {
+    editModal.classList.remove('open');
+  });
+
+  document.getElementById('edit-modal-save').addEventListener('click', async () => {
+    const newTag = editTagSelect.value;
+    editModalStatus.textContent = 'Saving...';
     try {
       const { setDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      // Use btoa of src as a unique stable document ID
+      const docId = btoa(currentEditSrc).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+      const newCaption = document.getElementById('edit-caption-input').value.trim();
+      await setDoc(doc(db, 'photos', docId), { src: currentEditSrc, tag: newTag, isPdf: !!currentEditItem.dataset.isPdf, caption: newCaption, uploadedAt: Date.now() });
+
+      // Update the gallery item
+      currentEditItem.dataset.tag = newTag;
+      currentEditItem.dataset.tags = newTag !== 'all' ? `${newTag} all` : 'all';
+      currentEditItem.dataset.caption = newCaption;
+      const labelEl = document.querySelector(`.filter-btn[data-filter="${newTag}"]`);
+      const captionSpan = currentEditItem.querySelector('.caption-text');
+      if (captionSpan) captionSpan.textContent = newCaption || (labelEl ? labelEl.textContent : newTag);
+
+      editModalStatus.textContent = '✓ Saved!';
+      setTimeout(() => editModal.classList.remove('open'), 800);
+    } catch(e) {
+      editModalStatus.textContent = 'Error saving — please try again.';
+      console.error(e);
+    }
+  });
+
+  // FIRESTORE SAVE - use hashed URL as doc ID to prevent duplicates
+  async function savePhotoToIndex(src, tag, isPdf, caption) {
+    try {
+      const { setDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
-      await setDoc(doc(db, 'photos', docId), { src, tag, isPdf: !!isPdf, uploadedAt: Date.now() });
+      await setDoc(doc(db, 'photos', docId), { src, tag, isPdf: !!isPdf, caption: caption || '', uploadedAt: Date.now() });
     } catch(e) { console.warn('Firestore save error:', e); }
   }
 
@@ -3962,7 +4079,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         const { src, tag, isPdf } = doc.data();
         if (!seen.has(src)) {
           seen.add(src);
-          addToGallery(src, tag, isPdf);
+          addToGallery(src, tag, isPdf, caption);
         }
       });
     } catch(e) {
@@ -4011,10 +4128,10 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         thumb.src = isPdf ? src.replace('/upload/', '/upload/q_auto,f_jpg,pg_1/').replace('.pdf', '.jpg') : src;
         thumb.style.cssText = 'width:80px;height:80px;object-fit:cover;border:2px solid #e63030;';
         preview.appendChild(thumb);
-        await savePhotoToIndex(src, tag, isPdf);
+        await savePhotoToIndex(src, tag, isPdf, '');
         // Only add to gallery if not already shown (avoids duplicate on upload)
         if (!loadedSrcs.has(src)) {
-          addToGallery(src, tag, isPdf);
+          addToGallery(src, tag, isPdf, caption);
         }
         count++;
         status.textContent = `Uploading... ${count} done`;
