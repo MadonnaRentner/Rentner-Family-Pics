@@ -138,6 +138,10 @@
         footer { border-top: 1px solid #e8e6e0; padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center; }
     .footer-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; color: #aaa89e; letter-spacing: 0.05em; }
     @media (max-width: 768px) {
+      /* Restore default cursor on mobile */
+      * { cursor: auto !important; }
+      #cursor { display: none !important; }
+
       /* NAV */
       nav {
         padding: 1rem 1.25rem;
