@@ -47,12 +47,21 @@
     .caption-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.9); }
     .placeholder { background: #ede9e0; display: flex; align-items: center; justify-content: center; }
     .placeholder svg { opacity: 0.25; }
-    .lightbox { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.92); z-index: 100; align-items: center; justify-content: center; padding: 2rem; }
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.95); z-index: 100; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; }
     .lightbox.open { display: flex; }
-    .lightbox-img { max-width: 80vw; max-height: 85vh; object-fit: contain; }
-    .lightbox-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.5rem; cursor: pointer; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 200; line-height: 1; padding: 0.5rem; }
+    .lightbox-img { max-width: 90vw; max-height: 80vh; object-fit: contain; display: block; }
+    .lightbox-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.8rem; cursor: pointer; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 200; line-height: 1; padding: 0.5rem; z-index: 101; }
     .lightbox-close:hover { color: white; }
-    .lightbox-caption { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); }
+    .lightbox-caption { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); margin-top: 1rem; text-align: center; }
+    .lightbox-counter { position: absolute; top: 1rem; left: 1rem; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; }
+    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.5); font-size: 2rem; cursor: pointer; padding: 1rem; z-index: 101; transition: color 0.2s; }
+    .lightbox-nav:hover { color: white; }
+    .lightbox-prev { left: 0.5rem; }
+    .lightbox-next { right: 0.5rem; }
+    @media (max-width: 768px) {
+      .lightbox-img { max-width: 95vw; max-height: 75vh; }
+      .lightbox-nav { font-size: 1.5rem; padding: 0.5rem; }
+    }
     .about-layout { display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap; }
     .about-body { flex: 1; min-width: 260px; }
     .about-photo-wrap { flex-shrink: 0; }
@@ -177,8 +186,10 @@
       .filter-btn { font-size: 0.7rem; padding: 0.35rem 0.75rem; }
 
       /* GALLERY */
-      .gallery { padding: 0.75rem 1.25rem 2rem; columns: 2; column-gap: 8px; }
-      .gallery-item { margin-bottom: 8px; }
+      .gallery { padding: 0.75rem 0.5rem 2rem; columns: 3; column-gap: 4px; }
+      .gallery-item { margin-bottom: 4px; }
+      .gallery-item img { object-fit: cover; }
+      .edit-btn { font-size: 0.55rem; padding: 3px 5px; }
 
       /* VIDEO SECTION */
       .video-section { padding: 2rem 1.25rem 2.5rem; }
@@ -3707,7 +3718,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 
 <hr class="divider">
 
-<div class="filters" style="flex-wrap: wrap;">
+<div class="filters" id="photo-filters" style="flex-wrap: wrap;">
   <span class="filter-label">Filter</span>
   <button class="filter-btn active" data-filter="all">All</button>
   <button class="filter-btn" data-filter="auntcarrie">Aunt Carrie</button>
@@ -3742,7 +3753,10 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightbox-close">✕</button>
-  <div class="placeholder lightbox-img" style="width:600px; height:400px;"></div>
+  <span class="lightbox-counter" id="lightbox-counter"></span>
+  <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#8249;</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  <button class="lightbox-nav lightbox-next" id="lightbox-next">&#8250;</button>
   <span class="lightbox-caption" id="lightbox-caption"></span>
 </div>
 
@@ -17838,7 +17852,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   const aboutSection = document.getElementById('section-about');
   const heroSection = document.querySelector('.hero');
   const divider = document.querySelector('.divider');
-  const filtersDiv = document.querySelector('.filters');
+  const filtersDiv = document.getElementById('photo-filters');
   const galleryDiv = document.getElementById('gallery');
   const uploadSection = document.querySelector('.upload-section');
 
@@ -17871,6 +17885,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   document.getElementById('nav-videos').addEventListener('click', e => { e.preventDefault(); showPage('videos'); });
   document.getElementById('nav-about').addEventListener('click', e => { e.preventDefault(); showPage('about'); });
   showPage('photos');
+  loadSavedPhotos();
 
   // CURSOR
   document.addEventListener('mousemove', e => {
@@ -17889,9 +17904,64 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   });
 
   // LIGHTBOX
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCounter = document.getElementById('lightbox-counter');
+  let currentIndex = 0;
+
+  function getVisibleItems() {
+    return [...document.querySelectorAll('.gallery-item')].filter(i => i.style.display !== 'none');
+  }
+
+  function openLightbox(index) {
+    const items = getVisibleItems();
+    if (!items[index]) return;
+    currentIndex = index;
+    const img = items[index].querySelector('img');
+    const cap = items[index].querySelector('.caption-text');
+    lightboxImg.src = img ? img.src : '';
+    lbCaption.textContent = cap ? cap.textContent.trim() : '';
+    lightboxCounter.textContent = `${index + 1} / ${items.length}`;
+    lightbox.classList.add('open');
+  }
+
+  function closeLightbox() { lightbox.classList.remove('open'); lightboxImg.src = ''; }
+
   const lightboxClose = document.getElementById('lightbox-close');
-  if (lightboxClose) lightboxClose.addEventListener('click', () => lightbox.classList.remove('open'));
-  lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  document.getElementById('lightbox-prev').addEventListener('click', e => {
+    e.stopPropagation();
+    const items = getVisibleItems();
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    openLightbox(currentIndex);
+  });
+
+  document.getElementById('lightbox-next').addEventListener('click', e => {
+    e.stopPropagation();
+    const items = getVisibleItems();
+    currentIndex = (currentIndex + 1) % items.length;
+    openLightbox(currentIndex);
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'ArrowRight') document.getElementById('lightbox-next').click();
+    if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev').click();
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Swipe support for mobile
+  let touchStartX = 0;
+  lightbox.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) document.getElementById('lightbox-next').click();
+      else document.getElementById('lightbox-prev').click();
+    }
+  });
 
   // FILTERS
   const filterBtns = document.querySelectorAll('.filter-btn:not(.video-filter-btn)');
@@ -17945,7 +18015,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     item.appendChild(editBtn);
     item.appendChild(caption);
     gallery.appendChild(item);
-    item.addEventListener('click', () => { lbCaption.textContent = caption.textContent.trim(); lightbox.classList.add('open'); });
+    item.addEventListener('click', () => { const items = getVisibleItems(); openLightbox(items.indexOf(item)); });
     item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
     item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
 
@@ -18051,12 +18121,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     }
   }
 
-  // Wait for page to be fully ready before loading
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadSavedPhotos);
-  } else {
-    loadSavedPhotos();
-  }
+  // loadSavedPhotos is called after showPage above
 
   // CLOUDINARY UPLOAD
   async function uploadToCloudinary(file, tag) {
