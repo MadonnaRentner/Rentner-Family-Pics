@@ -17887,21 +17887,23 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   showPage('photos');
   loadSavedPhotos();
 
-  // CURSOR
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-    cursor.classList.add('visible');
-  });
-  document.addEventListener('mouseleave', () => cursor.classList.remove('visible'));
-  document.addEventListener('mouseenter', () => cursor.classList.add('visible'));
-  document.addEventListener('mouseover', e => {
-    if (e.target.closest('a, button, .gallery-item, .video-card, .upload-file-btn, .filter-btn, .vtab')) {
-      cursor.classList.add('hovered');
-    } else {
-      cursor.classList.remove('hovered');
-    }
-  });
+  // CURSOR - desktop only
+  if (cursor && window.matchMedia('(hover: hover)').matches) {
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      cursor.classList.add('visible');
+    });
+    document.addEventListener('mouseleave', () => cursor.classList.remove('visible'));
+    document.addEventListener('mouseenter', () => cursor.classList.add('visible'));
+    document.addEventListener('mouseover', e => {
+      if (e.target.closest('a, button, .gallery-item, .video-card, .upload-file-btn, .filter-btn, .vtab')) {
+        cursor.classList.add('hovered');
+      } else {
+        cursor.classList.remove('hovered');
+      }
+    });
+  }
 
   // LIGHTBOX
   const lightboxImg = document.getElementById('lightbox-img');
@@ -18016,8 +18018,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     item.appendChild(caption);
     gallery.appendChild(item);
     item.addEventListener('click', () => { const items = getVisibleItems(); openLightbox(items.indexOf(item)); });
-    item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-    item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    if (cursor) { item.addEventListener('mouseenter', () => cursor.classList.add('hovered')); item.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
 
     const spinner = document.getElementById('gallery-spinner');
     if (spinner) spinner.remove();
@@ -18229,8 +18230,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
     card.innerHTML = `<div class="video-wrapper">${mediaHTML}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
     videoGrid.appendChild(card);
-    card.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-    card.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
   }
 
   async function uploadVideoToCloudinary(file) {
