@@ -237,6 +237,7 @@
 <body>
 
 <div id="cursor"></div>
+<div id="mobile-log" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);color:#fff;font-size:11px;padding:8px;z-index:9999;max-height:150px;overflow-y:auto;font-family:monospace;"></div>
 
 <nav>
   <span class="nav-logo">Rentner-Brown Family Photos</span>
@@ -3745,12 +3746,11 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <button class="filter-btn" data-filter="weddings">Weddings</button>
 </div>
 
-<div class="gallery" id="gallery">
-  <div id="gallery-spinner" class="gallery-spinner">
-    <div class="spinner-ring"></div>
-    <p>Loading photos...</p>
-  </div>
+<div id="gallery-spinner" class="gallery-spinner">
+  <div class="spinner-ring"></div>
+  <p>Loading photos...</p>
 </div>
+<div class="gallery" id="gallery"></div>
 
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightbox-close">✕</button>
@@ -17825,8 +17825,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   <span class="footer-text">© Rentner-Brown Family Photos · Est. 1950</span>
 </footer>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, where, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD-zn6Luf8qfIsR50MiJdkIWhbLtrLj0_k",
@@ -17862,6 +17862,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     divider.style.display = 'none';
     filtersDiv.style.display = 'none';
     galleryDiv.style.display = 'none';
+    const spHide = document.getElementById('gallery-spinner');
+    if (spHide) spHide.style.display = 'none';
     videosSection.style.display = 'none';
     aboutSection.style.display = 'none';
     uploadSection.style.display = 'none';
@@ -17871,6 +17873,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       divider.style.display = '';
       filtersDiv.style.display = '';
       galleryDiv.style.display = '';
+      const sp = document.getElementById('gallery-spinner');
+      if (sp) sp.style.display = '';
       uploadSection.style.display = '';
       document.getElementById('nav-photos').style.color = '#e63030';
     } else if (page === 'videos') {
@@ -18022,8 +18026,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     item.addEventListener('click', () => { const items = getVisibleItems(); openLightbox(items.indexOf(item)); });
     if (cursor) { item.addEventListener('mouseenter', () => cursor.classList.add('hovered')); item.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
 
-    const spinner = document.getElementById('gallery-spinner');
-    if (spinner) spinner.remove();
+    const sp2 = document.getElementById('gallery-spinner');
+    if (sp2) sp2.style.display = 'none';
   }
 
   // EDIT MODAL
@@ -18096,11 +18100,20 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   }
 
   // FIRESTORE LOAD - deduplicate by src URL
+  function mlog(msg) {
+    const el = document.getElementById('mobile-log');
+    if (el) { el.style.display='block'; el.innerHTML += msg + '<br>'; }
+    console.log(msg);
+  }
+
   async function loadSavedPhotos() {
     const spinner = document.getElementById('gallery-spinner');
     try {
+      mlog('Starting load...');
       if (spinner) spinner.innerHTML = '<div class="spinner-ring"></div><p>Connecting to database...</p>';
+      mlog('Firestore connected');
       const snapshot = await getDocs(collection(db, 'photos'));
+      mlog('Found ' + snapshot.size + ' photos');
       if (spinner) spinner.innerHTML = '<div class="spinner-ring"></div><p>Loading ' + snapshot.size + ' photos...</p>';
       const seen = new Set();
       snapshot.forEach(docSnap => {
@@ -18114,11 +18127,11 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
         if (seen.size === 0) {
           spinner.innerHTML = '<svg width="48" height="48" fill="none" viewBox="0 0 24 24" style="margin-bottom:1rem; opacity:0.3;"><path stroke="#1a1a18" stroke-width="1.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke="#1a1a18" stroke-width="1.2"/></svg><p style="font-size:0.85rem;letter-spacing:0.05em;color:#bbb;">No photos yet — scroll down to upload your first one!</p>';
         } else {
-          spinner.remove();
+          spinner.style.display = 'none';
         }
       }
     } catch(e) {
-      console.error('Firestore load error:', e);
+      mlog('ERROR: ' + e.message);
       if (spinner) spinner.innerHTML = '<p style="color:#e63030;font-size:0.8rem;font-family:Helvetica Neue,Arial,sans-serif;padding:1rem;">Error: ' + e.message + '</p>';
     }
   }
