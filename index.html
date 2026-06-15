@@ -3835,6 +3835,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
       <button class="edit-modal-save" id="edit-modal-save">Save</button>
       <button class="edit-modal-cancel" id="edit-modal-cancel">Cancel</button>
     </div>
+    <button id="edit-modal-delete" style="width:100%;margin-top:0.75rem;background:transparent;border:1px solid #e63030;color:#e63030;font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem;cursor:pointer;">🗑 Remove Photo</button>
     <div class="edit-modal-status" id="edit-modal-status"></div>
   </div>
 </div>
@@ -17967,6 +17968,24 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
 
   document.getElementById('edit-modal-cancel').addEventListener('click', () => {
     editModal.classList.remove('open');
+  });
+
+  document.getElementById('edit-modal-delete').addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to remove this photo? This cannot be undone.')) return;
+    editModalStatus.textContent = 'Removing...';
+    try {
+      const { deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const docId = btoa(currentEditSrc).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+      await deleteDoc(doc(db, 'photos', docId));
+      // Remove from gallery
+      currentEditItem.remove();
+      // Remove from loadedSrcs so it won't be re-added
+      loadedSrcs.delete(currentEditSrc);
+      editModal.classList.remove('open');
+    } catch(e) {
+      editModalStatus.textContent = 'Error removing photo — please try again.';
+      console.error(e);
+    }
   });
 
   document.getElementById('edit-modal-save').addEventListener('click', async () => {
