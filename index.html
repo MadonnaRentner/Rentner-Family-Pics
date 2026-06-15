@@ -3904,7 +3904,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
       btn.classList.add('active');
       const f = btn.dataset.filter;
       document.querySelectorAll('.gallery-item').forEach(item => {
-        item.style.display = (f === 'all' || item.dataset.tag === f) ? '' : 'none';
+        const tags = item.dataset.tags || item.dataset.tag;
+        item.style.display = (f === 'all' || tags.includes(f)) ? '' : 'none';
       });
     });
   });
@@ -3917,52 +3918,52 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
       ? (isPdf ? src.replace('/upload/', '/upload/q_100,f_jpg,pg_1/').replace('.pdf', '.jpg') : src.replace('/upload/', '/upload/q_100,f_auto/'))
       : src;
 
-    const addItem = (filterTag) => {
-      const item = document.createElement('div');
-      item.className = 'gallery-item';
-      item.dataset.tag = filterTag;
-      const img = document.createElement('img');
-      img.src = qualitySrc;
-      img.style.cssText = 'width:100%; display:block;';
-      const badge = isPdf ? '<span style="position:absolute;top:8px;left:8px;background:#e63030;color:white;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.6rem;letter-spacing:0.1em;padding:2px 6px;text-transform:uppercase;">PDF</span>' : '';
-      const caption = document.createElement('div');
-      caption.className = 'caption';
-      const label = document.querySelector(`.filter-btn[data-filter="${tag}"]`);
-      caption.innerHTML = `<span class="caption-text">${label ? label.textContent : tag}</span>`;
-      item.appendChild(img);
-      item.insertAdjacentHTML('beforeend', badge);
-      item.appendChild(caption);
-      gallery.appendChild(item);
-      item.addEventListener('click', () => { lbCaption.textContent = caption.textContent.trim(); lightbox.classList.add('open'); });
-      item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-      item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
-    };
-    addItem(tag);
-    if (tag !== 'all') addItem('all');
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    // Store both tags as data attributes so one item matches both filters
+    item.dataset.tag = tag;
+    item.dataset.tags = tag !== 'all' ? `${tag} all` : 'all';
+    const img = document.createElement('img');
+    img.src = qualitySrc;
+    img.style.cssText = 'width:100%; display:block;';
+    const badge = isPdf ? '<span style="position:absolute;top:8px;left:8px;background:#e63030;color:white;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.6rem;letter-spacing:0.1em;padding:2px 6px;text-transform:uppercase;">PDF</span>' : '';
+    const caption = document.createElement('div');
+    caption.className = 'caption';
+    const label = document.querySelector(`.filter-btn[data-filter="${tag}"]`);
+    caption.innerHTML = `<span class="caption-text">${label ? label.textContent : tag}</span>`;
+    item.appendChild(img);
+    item.insertAdjacentHTML('beforeend', badge);
+    item.appendChild(caption);
+    gallery.appendChild(item);
+    item.addEventListener('click', () => { lbCaption.textContent = caption.textContent.trim(); lightbox.classList.add('open'); });
+    item.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+    item.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+
     const empty = document.getElementById('gallery-empty');
     if (empty) empty.remove();
   }
 
-  // FIRESTORE SAVE
+  // FIRESTORE SAVE - use hashed URL as doc ID to prevent duplicates
   async function savePhotoToIndex(src, tag, isPdf) {
     try {
-      const q = query(collection(db, 'photos'), where('src', '==', src));
-      const existing = await getDocs(q);
-      if (!existing.empty) return;
-      await addDoc(collection(db, 'photos'), { src, tag, isPdf: !!isPdf, uploadedAt: Date.now() });
+      const { setDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      // Use btoa of src as a unique stable document ID
+      const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+      await setDoc(doc(db, 'photos', docId), { src, tag, isPdf: !!isPdf, uploadedAt: Date.now() });
     } catch(e) { console.warn('Firestore save error:', e); }
   }
 
-  // FIRESTORE LOAD
+  // FIRESTORE LOAD - deduplicate by src URL
   async function loadSavedPhotos() {
     try {
-      console.log('Loading photos from Firestore...');
       const snapshot = await getDocs(collection(db, 'photos'));
-      console.log(`Found ${snapshot.size} photos in Firestore`);
+      const seen = new Set();
       snapshot.forEach(doc => {
         const { src, tag, isPdf } = doc.data();
-        console.log('Loading photo:', src, tag);
-        addToGallery(src, tag, isPdf);
+        if (!seen.has(src)) {
+          seen.add(src);
+          addToGallery(src, tag, isPdf);
+        }
       });
     } catch(e) {
       console.error('Firestore load error:', e);
