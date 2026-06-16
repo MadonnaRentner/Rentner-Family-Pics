@@ -3730,6 +3730,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <button class="filter-btn" data-filter="brown">Brown Family</button>
   <button class="filter-btn" data-filter="burny">Burny Family</button>
   <button class="filter-btn" data-filter="christmas">Christmas</button>
+  <button class="filter-btn" data-filter="cousins">Cousins</button>
   <button class="filter-btn" data-filter="daddio">Daddio (Big Rick)</button>
   <button class="filter-btn" data-filter="familyparties">Family Parties</button>
   <button class="filter-btn" data-filter="gasstation">Gas Station</button>
@@ -3782,6 +3783,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
     <button class="filter-btn video-filter-btn" data-vfilter="brown">Brown Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="burny">Burny Family</button>
     <button class="filter-btn video-filter-btn" data-vfilter="christmas">Christmas</button>
+    <button class="filter-btn video-filter-btn" data-vfilter="cousins">Cousins</button>
     <button class="filter-btn video-filter-btn" data-vfilter="daddio">Daddio (Big Rick)</button>
     <button class="filter-btn video-filter-btn" data-vfilter="familyparties">Family Parties</button>
     <button class="filter-btn video-filter-btn" data-vfilter="gasstation">Gas Station</button>
@@ -3834,32 +3836,37 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 <div class="edit-modal" id="edit-modal">
   <div class="edit-modal-inner">
     <h3>Edit Photo</h3>
-    <select id="edit-tag-select">
-      <option value="all">All</option>
-      <option value="auntcarrie">Aunt Carrie</option>
-      <option value="auntdonna">Aunt Donna</option>
-      <option value="auntdorothy">Aunt Dorothy</option>
-      <option value="birthdays">Birthdays</option>
-      <option value="bromley">Bromley Family</option>
-      <option value="brown">Brown Family</option>
-      <option value="burny">Burny Family</option>
-      <option value="christmas">Christmas</option>
-      <option value="daddio">Daddio (Big Rick)</option>
-      <option value="gasstation">Gas Station</option>
-      <option value="grandma">Grandma</option>
-      <option value="grandpa">Grandpa</option>
-      <option value="grandpawar">Grandpa War Photos and Documents</option>
-      <option value="pregrandma">Pre-Grandma (1929)</option>
-      <option value="pregrandpa">Pre-Grandpa (1926)</option>
-      <option value="hart">Hart Family</option>
-      <option value="lakelawn">Lake Lawn</option>
-      <option value="madonna">Madonna</option>
-      <option value="rentnerbrady">Rentner-Brady Family</option>
-      <option value="rentnerbrown">Rentner-Brown Family</option>
-      <option value="rentnercygan">Rentner-Cygan Family</option>
-      <option value="rentnerhyde">Rentner-Hyde Family</option>
-      <option value="weddings">Weddings</option>
-    </select>
+    <div id="edit-tag-wrap" style="width:100%;border:1px solid #d8d6d0;background:#fafaf8;padding:0.5rem;max-height:160px;overflow-y:auto;font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.8rem;margin-bottom:1rem;box-sizing:border-box;">
+      <p style="color:#aaa89e;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Choose one or more categories</p>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="auntcarrie"> Aunt Carrie</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="auntdonna"> Aunt Donna</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="auntdorothy"> Aunt Dorothy</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="birthdays"> Birthdays</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="bromley"> Bromley Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="brown"> Brown Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="burny"> Burny Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="christmas"> Christmas</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="cousins"> Cousins</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="daddio"> Daddio (Big Rick)</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="familyparties"> Family Parties</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="gasstation"> Gas Station</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="grandma"> Grandma</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="grandpa"> Grandpa</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="grandpawar"> Grandpa War Photos and Documents</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="hart"> Hart Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="lakelawn"> Lake Lawn</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="madonna"> Madonna</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="misc"> Misc.</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="pregrandma"> Pre-Grandma (1929)</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="pregrandpa"> Pre-Grandpa (1926)</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnerbrady"> Rentner-Brady Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnerbrown"> Rentner-Brown Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnercygan"> Rentner-Cygan Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="rentnerhyde"> Rentner-Hyde Family</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="vacations"> Vacations</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="weddings"> Weddings</label>
+      <label style="display:block;padding:2px 0;"><input type="checkbox" value="wiedelman"> Wiedelman Family</label>
+    </div>
     <label style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:#aaa89e;display:block;margin-bottom:0.4rem;">Caption</label>
     <input type="text" id="edit-caption-input" placeholder="Add a caption..." style="width:100%;font-family:'Helvetica Neue',Arial,sans-serif;font-size:0.85rem;padding:0.6rem;border:1px solid #d8d6d0;background:#fff;color:#1a1a18;margin-bottom:1rem;box-sizing:border-box;">
     <div class="edit-modal-btns">
@@ -3889,6 +3896,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
         <label style="display:block;padding:2px 0;"><input type="checkbox" value="brown"> Brown Family</label>
         <label style="display:block;padding:2px 0;"><input type="checkbox" value="burny"> Burny Family</label>
         <label style="display:block;padding:2px 0;"><input type="checkbox" value="christmas"> Christmas</label>
+        <label style="display:block;padding:2px 0;"><input type="checkbox" value="cousins"> Cousins</label>
         <label style="display:block;padding:2px 0;"><input type="checkbox" value="daddio"> Daddio (Big Rick)</label>
         <label style="display:block;padding:2px 0;"><input type="checkbox" value="familyparties"> Family Parties</label>
         <label style="display:block;padding:2px 0;"><input type="checkbox" value="gasstation"> Gas Station</label>
