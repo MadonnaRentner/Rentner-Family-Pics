@@ -105,7 +105,6 @@
     .video-section-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa89e; }
     .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
     .video-card { background: #fff; border: 1px solid #e8e6e0; }
-    .video-card:hover .video-edit-title-btn { opacity: 1; }
     .video-wrapper { position: relative; background: #1a1a18; aspect-ratio: 16/9; overflow: hidden; cursor: pointer; }
     .video-wrapper video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
@@ -208,7 +207,6 @@
       /* VIDEO SECTION */
       .video-section { padding: 2rem 1.25rem 2.5rem; }
       .video-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-      .video-remove-btn, .video-edit-title-btn { display: none !important; }
       .video-card button { font-size: 0.5rem !important; padding: 3px 5px !important; }
       .video-info { padding: 0.6rem !important; }
       .video-title { font-size: 0.75rem !important; }
@@ -18277,6 +18275,10 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   const videoDropZone = document.getElementById('video-drop-zone');
   const videoStatus = document.getElementById('video-upload-status');
 
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.video-menu-dropdown').forEach(d => d.style.display = 'none');
+  });
+
   function addVideoCard(src, title, type, tag, skipSave) {
     const empty = document.getElementById('video-empty');
     if (empty) empty.remove();
@@ -18292,48 +18294,77 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const playOverlay = '<div class="video-play-overlay"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
     card.innerHTML = `<div class="video-wrapper">${mediaHTML}${playOverlay}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '🗑 Remove';
-    deleteBtn.className = 'video-remove-btn';
-    deleteBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:rgba(20,20,18,0.75);color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;z-index:3;';
-    deleteBtn.addEventListener('click', async e => {
+    const menuWrap = document.createElement('div');
+    menuWrap.className = 'video-menu-wrap';
+    menuWrap.style.cssText = 'position:absolute;top:8px;right:8px;z-index:4;';
+
+    const menuTab = document.createElement('button');
+    menuTab.className = 'video-menu-tab';
+    menuTab.textContent = '⋯';
+    menuTab.style.cssText = 'background:rgba(20,20,18,0.75);color:white;border:none;font-size:1rem;line-height:1;width:28px;height:28px;cursor:pointer;border-radius:3px;';
+
+    const menuDropdown = document.createElement('div');
+    menuDropdown.className = 'video-menu-dropdown';
+    menuDropdown.style.cssText = 'display:none;position:absolute;top:32px;right:0;background:#fafaf8;border:1px solid #d8d6d0;min-width:120px;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+
+    const editOption = document.createElement('button');
+    editOption.textContent = '✎ Edit';
+    editOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
+
+    const shareOption = document.createElement('button');
+    shareOption.textContent = '⤴ Share';
+    shareOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
+
+    const removeOption = document.createElement('button');
+    removeOption.textContent = '🗑 Remove';
+    removeOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#e63030;';
+
+    menuTab.addEventListener('click', e => {
       e.stopPropagation();
-      if (confirm('Remove this video? This cannot be undone.')) {
-        try {
-          const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
-          await deleteDoc(doc(db, 'videos', docId));
-        } catch(err) { console.error('Error deleting video from Firestore:', err); }
-        card.remove();
-        if (!videoGrid.querySelector('.video-card')) {
-          videoGrid.innerHTML = '<div class="video-empty" id="video-empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below!</p></div>';
-        }
-      }
+      const isOpen = menuDropdown.style.display === 'block';
+      document.querySelectorAll('.video-menu-dropdown').forEach(d => d.style.display = 'none');
+      menuDropdown.style.display = isOpen ? 'none' : 'block';
     });
-    const editTitleBtn = document.createElement('button');
-    editTitleBtn.textContent = '✎ Edit Title';
-    editTitleBtn.className = 'video-edit-title-btn';
-    editTitleBtn.style.cssText = 'position:absolute;bottom:8px;right:8px;background:rgba(20,20,18,0.75);color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;z-index:3;opacity:0;transition:opacity 0.2s;';
-    editTitleBtn.addEventListener('click', async e => {
+
+    editOption.addEventListener('click', async e => {
       e.stopPropagation();
+      menuDropdown.style.display = 'none';
       const newTitle = prompt('Edit video title:', card.querySelector('.video-title').textContent);
       if (newTitle === null) return;
-      const finalTitle = newTitle.trim() || 'Family Video';
-      card.querySelector('.video-title').textContent = finalTitle;
+      const trimmed = newTitle.trim() || 'Family Video';
+      card.querySelector('.video-title').textContent = trimmed;
       try {
         const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
-        await setDoc(doc(db, 'videos', docId), { src, title: finalTitle, type, tag, uploadedAt: Date.now() });
+        await setDoc(doc(db, 'videos', docId), { src, title: trimmed, type, tag, uploadedAt: Date.now() });
       } catch(err) { console.error('Error updating video title:', err); }
     });
-    const shareBtn = document.createElement('button');
-    shareBtn.textContent = '⤴ Share';
-    shareBtn.style.cssText = 'position:absolute;top:8px;left:8px;background:rgba(20,20,18,0.75);color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;z-index:3;';
-    shareBtn.addEventListener('click', e => {
+
+    shareOption.addEventListener('click', e => {
       e.stopPropagation();
+      menuDropdown.style.display = 'none';
       shareItem('video', card.dataset.shareId, card);
     });
-    card.appendChild(deleteBtn);
-    card.appendChild(shareBtn);
-    card.appendChild(editTitleBtn);
+
+    removeOption.addEventListener('click', async e => {
+      e.stopPropagation();
+      menuDropdown.style.display = 'none';
+      if (!confirm('Remove this video? This cannot be undone.')) return;
+      try {
+        const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+        await deleteDoc(doc(db, 'videos', docId));
+      } catch(err) { console.error('Error deleting video from Firestore:', err); }
+      card.remove();
+      if (!videoGrid.querySelector('.video-card')) {
+        videoGrid.innerHTML = '<div class="video-empty" id="video-empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below!</p></div>';
+      }
+    });
+
+    menuDropdown.appendChild(editOption);
+    menuDropdown.appendChild(shareOption);
+    menuDropdown.appendChild(removeOption);
+    menuWrap.appendChild(menuTab);
+    menuWrap.appendChild(menuDropdown);
+    card.appendChild(menuWrap);
     videoGrid.appendChild(card);
     if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
     card.querySelector('.video-wrapper').addEventListener('click', () => openVideoLightbox(src, title, type, vimeoId));
