@@ -62,6 +62,14 @@
       .lightbox-img { max-width: 95vw; max-height: 75vh; }
       .lightbox-nav { font-size: 1.5rem; padding: 0.5rem; }
     }
+
+    .video-lightbox { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.95); z-index: 100; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; }
+    .video-lightbox.open { display: flex; }
+    .video-lightbox-inner { width: 100%; max-width: 960px; aspect-ratio: 16/9; background: #000; position: relative; }
+    .video-lightbox-inner video, .video-lightbox-inner iframe { width: 100%; height: 100%; display: block; border: none; }
+    .video-lightbox-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.8rem; cursor: pointer; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 200; line-height: 1; padding: 0.5rem; z-index: 101; }
+    .video-lightbox-close:hover { color: white; }
+    .video-lightbox-caption { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); margin-top: 1rem; text-align: center; }
     .about-layout { display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap; }
     .about-body { flex: 1; min-width: 260px; }
     .about-photo-wrap { flex-shrink: 0; }
@@ -95,11 +103,14 @@
     .video-section { padding: 3rem 3rem 4rem; border-top: 1px solid #e8e6e0; }
     .video-section h2 { font-size: 1.5rem; font-weight: 400; color: #1a1a18; margin-bottom: 1rem; }
     .video-section-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa89e; }
-    .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 360px)); gap: 1.25rem; justify-content: start; }
     .video-card { background: #fff; border: 1px solid #e8e6e0; }
-    .video-wrapper { position: relative; background: #1a1a18; aspect-ratio: 16/9; overflow: hidden; }
-    .video-wrapper video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .video-wrapper { position: relative; background: #1a1a18; aspect-ratio: 16/9; overflow: hidden; cursor: pointer; }
+    .video-wrapper video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .video-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .video-play-overlay svg { background: rgba(230,48,48,0.9); border-radius: 50%; padding: 14px; width: 22px; height: 22px; transition: transform 0.2s, background 0.2s; }
+    .video-wrapper:hover .video-play-overlay svg { transform: scale(1.1); background: #e63030; }
     .video-info { padding: 0.85rem 1rem; border-top: 1px solid #e8e6e0; }
     .video-title { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; font-weight: 500; color: #1a1a18; margin-bottom: 0.2rem; }
     .video-meta { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; color: #aaa89e; letter-spacing: 0.05em; }
@@ -250,7 +261,7 @@
 
 <section class="hero">
   <div>
-    <p class="hero-eyebrow">Est. 1950 — Ongoing</p>
+    <p class="hero-eyebrow">Est. 1950 — Ever-growing</p>
     <h1>Rentner-Brown<br><em>Family Photos</em></h1>
     <p>Love, Josie Too</p>
   </div>
@@ -3764,6 +3775,12 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <img class="lightbox-img" id="lightbox-img" src="" alt="">
   <button class="lightbox-nav lightbox-next" id="lightbox-next">&#8250;</button>
   <span class="lightbox-caption" id="lightbox-caption"></span>
+</div>
+
+<div class="video-lightbox" id="video-lightbox">
+  <button class="video-lightbox-close" id="video-lightbox-close">✕</button>
+  <div class="video-lightbox-inner" id="video-lightbox-inner"></div>
+  <span class="video-lightbox-caption" id="video-lightbox-caption"></span>
 </div>
 
 <section class="video-section" id="section-videos">
@@ -18213,11 +18230,12 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
     const mediaHTML = type === 'cloudinary'
-      ? `<video controls style="width:100%;height:100%;display:block;object-fit:cover;background:#000;"><source src="${src}" type="video/mp4"></video>`
-      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted><source src="${src}" type="video/mp4"></video>`
+      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=1&muted=1" frameborder="0" style="pointer-events:none;"></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
+    const playOverlay = '<div class="video-play-overlay"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
-    card.innerHTML = `<div class="video-wrapper">${mediaHTML}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
+    card.innerHTML = `<div class="video-wrapper">${mediaHTML}${playOverlay}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = '🗑 Remove';
     deleteBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:rgba(20,20,18,0.75);color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;z-index:3;';
@@ -18237,9 +18255,36 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     card.appendChild(deleteBtn);
     videoGrid.appendChild(card);
     if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
+    card.querySelector('.video-wrapper').addEventListener('click', () => openVideoLightbox(src, title, type, vimeoId));
 
     if (!skipSave) saveVideoToIndex(src, title, type, tag);
   }
+
+  // VIDEO LIGHTBOX
+  const videoLightbox = document.getElementById('video-lightbox');
+  const videoLightboxInner = document.getElementById('video-lightbox-inner');
+  const videoLightboxCaption = document.getElementById('video-lightbox-caption');
+
+  function openVideoLightbox(src, title, type, vimeoId) {
+    const html = type === 'cloudinary'
+      ? `<video controls autoplay style="width:100%;height:100%;display:block;background:#000;"><source src="${src}" type="video/mp4"></video>`
+      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+      : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
+    videoLightboxInner.innerHTML = html;
+    videoLightboxCaption.textContent = title || 'Family Video';
+    videoLightbox.classList.add('open');
+  }
+
+  function closeVideoLightbox() {
+    videoLightbox.classList.remove('open');
+    videoLightboxInner.innerHTML = '';
+  }
+
+  document.getElementById('video-lightbox-close').addEventListener('click', closeVideoLightbox);
+  videoLightbox.addEventListener('click', e => { if (e.target === videoLightbox) closeVideoLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (videoLightbox.classList.contains('open') && e.key === 'Escape') closeVideoLightbox();
+  });
 
   async function saveVideoToIndex(src, title, type, tag) {
     try {
