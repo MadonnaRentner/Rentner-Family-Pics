@@ -97,8 +97,9 @@
     .video-section-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa89e; }
     .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
     .video-card { background: #fff; border: 1px solid #e8e6e0; }
-    .video-wrapper { position: relative; background: #1a1a18; }
-    .video-wrapper video { display: block; width: 100%; max-height: 220px; object-fit: cover; }
+    .video-wrapper { position: relative; background: #1a1a18; aspect-ratio: 16/9; overflow: hidden; }
+    .video-wrapper video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .video-info { padding: 0.85rem 1rem; border-top: 1px solid #e8e6e0; }
     .video-title { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; font-weight: 500; color: #1a1a18; margin-bottom: 0.2rem; }
     .video-meta { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; color: #aaa89e; letter-spacing: 0.05em; }
@@ -18213,7 +18214,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
     const mediaHTML = type === 'cloudinary'
       ? `<video controls style="width:100%;display:block;max-height:220px;background:#000;"><source src="${src}" type="video/mp4"></video>`
-      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}" width="100%" height="220" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="display:block;"></iframe>`
+      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
     card.innerHTML = `<div class="video-wrapper">${mediaHTML}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
