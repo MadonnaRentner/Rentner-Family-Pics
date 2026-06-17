@@ -18164,7 +18164,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
 
   // HERO PHOTO UPLOAD
-  document.getElementById('hero-file-input').addEventListener('change', async function(e) {
+  const heroFileInput = document.getElementById('hero-file-input');
+  if (heroFileInput) heroFileInput.addEventListener('change', async function(e) {
     const file = e.target.files[0]; if (!file) return;
     const placeholder = document.getElementById('hero-placeholder');
     placeholder.innerHTML = '<span style="font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;color:#aaa;">Uploading...</span>';
