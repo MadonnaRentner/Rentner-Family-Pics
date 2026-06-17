@@ -25,7 +25,7 @@
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 3rem; border-bottom: 1px solid #e8e6e0; background: #f5eded; position: sticky; top: 0; z-index: 10; }
     .nav-logo { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; color: #e63030; white-space: nowrap; }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: #888880; transition: color 0.2s; }
+    .nav-links a { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: #888880; transition: color 0.2s; cursor: pointer; display: inline-block; padding: 0.4rem 0.2rem; touch-action: manipulation; }
     .nav-links a:hover { color: #1a1a18; }
     .hero { padding: 6rem 3rem 4rem; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
     .hero-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa89e; margin-bottom: 1.25rem; }
@@ -198,7 +198,7 @@
       .filter-btn { font-size: 0.7rem; padding: 0.35rem 0.75rem; }
 
       /* GALLERY */
-      .gallery { padding: 0.75rem 0.5rem 2rem !important; columns: 3 !important; column-gap: 4px !important; display: block !important; }
+      .gallery { padding: 0.75rem 0.5rem 2rem !important; columns: 3 !important; column-gap: 4px !important; }
       .gallery-item { margin-bottom: 4px !important; break-inside: avoid !important; width: 100% !important; }
       .gallery-item img { width: 100% !important; height: auto !important; display: block !important; }
       .edit-btn { font-size: 0.55rem; padding: 3px 5px; }
@@ -17875,6 +17875,9 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   document.getElementById('nav-photos').addEventListener('click', e => { e.preventDefault(); showPage('photos'); });
   document.getElementById('nav-videos').addEventListener('click', e => { e.preventDefault(); showPage('videos'); });
   document.getElementById('nav-about').addEventListener('click', e => { e.preventDefault(); showPage('about'); });
+  document.getElementById('nav-photos').addEventListener('touchend', e => { e.preventDefault(); showPage('photos'); });
+  document.getElementById('nav-videos').addEventListener('touchend', e => { e.preventDefault(); showPage('videos'); });
+  document.getElementById('nav-about').addEventListener('touchend', e => { e.preventDefault(); showPage('about'); });
   showPage('photos');
   loadSavedPhotos();
 
