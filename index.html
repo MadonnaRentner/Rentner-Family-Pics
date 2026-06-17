@@ -104,13 +104,13 @@
     .video-section h2 { font-size: 1.5rem; font-weight: 400; color: #1a1a18; margin-bottom: 1rem; }
     .video-section-eyebrow { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa89e; }
     .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
-    .video-card { background: #fff; border: 1px solid #e8e6e0; }
+    .video-card { background: #fff; border: 1px solid #e8e6e0; cursor: pointer; }
     .video-wrapper { position: relative; background: #1a1a18; aspect-ratio: 16/9; overflow: hidden; cursor: pointer; }
     .video-wrapper video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .video-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-    .video-play-overlay svg { background: rgba(230,48,48,0.9); border-radius: 50%; padding: 14px; width: 22px; height: 22px; transition: transform 0.2s, background 0.2s; }
-    .video-wrapper:hover .video-play-overlay svg { transform: scale(1.1); background: #e63030; }
+    .video-play-dot { background: #e63030; border-radius: 50%; width: 10px; height: 10px; transition: transform 0.2s; }
+    .video-wrapper:hover .video-play-dot { transform: scale(1.3); }
     .video-info { padding: 0.85rem 1rem; border-top: 1px solid #e8e6e0; }
     .video-title { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; font-weight: 500; color: #1a1a18; margin-bottom: 0.2rem; }
     .video-meta { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; color: #aaa89e; letter-spacing: 0.05em; }
@@ -211,7 +211,7 @@
       .video-info { padding: 0.6rem !important; }
       .video-title { font-size: 0.75rem !important; }
       .video-meta { font-size: 0.65rem !important; }
-      .video-play-overlay svg { width: 16px !important; height: 16px !important; padding: 10px !important; }
+      .video-play-dot { width: 8px !important; height: 8px !important; }
 
       /* UPLOAD SECTION */
       .upload-section { padding: 2rem 1.25rem; }
@@ -3787,6 +3787,10 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   <button class="video-lightbox-close" id="video-lightbox-close">✕</button>
   <div class="video-lightbox-inner" id="video-lightbox-inner"></div>
   <span class="video-lightbox-caption" id="video-lightbox-caption"></span>
+  <div class="video-menu-wrap" id="video-lightbox-menu-wrap" style="position:absolute;top:1rem;right:3.5rem;">
+    <button class="video-menu-tab" id="video-lightbox-menu-tab" style="background:rgba(255,255,255,0.15);color:white;border:none;font-size:1rem;line-height:1;width:32px;height:32px;cursor:pointer;border-radius:3px;">⋯</button>
+    <div class="video-menu-dropdown" id="video-lightbox-menu-dropdown" style="display:none;position:absolute;top:38px;right:0;background:#fafaf8;border:1px solid #d8d6d0;min-width:130px;box-shadow:0 4px 12px rgba(0,0,0,0.25);"></div>
+  </div>
 </div>
 
 <section class="video-section" id="section-videos">
@@ -18291,83 +18295,12 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted preload="metadata"><source src="${src}" type="video/mp4"></video>`
       : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=0&autoplay=0&muted=1" frameborder="0" style="pointer-events:none;"></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
-    const playOverlay = '<div class="video-play-overlay"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
+    const playOverlay = '<div class="video-play-overlay"><div class="video-play-dot"></div></div>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
     card.innerHTML = `<div class="video-wrapper">${mediaHTML}${playOverlay}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
-    const menuWrap = document.createElement('div');
-    menuWrap.className = 'video-menu-wrap';
-    menuWrap.style.cssText = 'position:absolute;top:8px;right:8px;z-index:4;';
-
-    const menuTab = document.createElement('button');
-    menuTab.className = 'video-menu-tab';
-    menuTab.textContent = '⋯';
-    menuTab.style.cssText = 'background:rgba(20,20,18,0.75);color:white;border:none;font-size:1rem;line-height:1;width:28px;height:28px;cursor:pointer;border-radius:3px;';
-
-    const menuDropdown = document.createElement('div');
-    menuDropdown.className = 'video-menu-dropdown';
-    menuDropdown.style.cssText = 'display:none;position:absolute;top:32px;right:0;background:#fafaf8;border:1px solid #d8d6d0;min-width:120px;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-
-    const editOption = document.createElement('button');
-    editOption.textContent = '✎ Edit';
-    editOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
-
-    const shareOption = document.createElement('button');
-    shareOption.textContent = '⤴ Share';
-    shareOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
-
-    const removeOption = document.createElement('button');
-    removeOption.textContent = '🗑 Remove';
-    removeOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#e63030;';
-
-    menuTab.addEventListener('click', e => {
-      e.stopPropagation();
-      const isOpen = menuDropdown.style.display === 'block';
-      document.querySelectorAll('.video-menu-dropdown').forEach(d => d.style.display = 'none');
-      menuDropdown.style.display = isOpen ? 'none' : 'block';
-    });
-
-    editOption.addEventListener('click', async e => {
-      e.stopPropagation();
-      menuDropdown.style.display = 'none';
-      const newTitle = prompt('Edit video title:', card.querySelector('.video-title').textContent);
-      if (newTitle === null) return;
-      const trimmed = newTitle.trim() || 'Family Video';
-      card.querySelector('.video-title').textContent = trimmed;
-      try {
-        const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
-        await setDoc(doc(db, 'videos', docId), { src, title: trimmed, type, tag, uploadedAt: Date.now() });
-      } catch(err) { console.error('Error updating video title:', err); }
-    });
-
-    shareOption.addEventListener('click', e => {
-      e.stopPropagation();
-      menuDropdown.style.display = 'none';
-      shareItem('video', card.dataset.shareId, card);
-    });
-
-    removeOption.addEventListener('click', async e => {
-      e.stopPropagation();
-      menuDropdown.style.display = 'none';
-      if (!confirm('Remove this video? This cannot be undone.')) return;
-      try {
-        const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
-        await deleteDoc(doc(db, 'videos', docId));
-      } catch(err) { console.error('Error deleting video from Firestore:', err); }
-      card.remove();
-      if (!videoGrid.querySelector('.video-card')) {
-        videoGrid.innerHTML = '<div class="video-empty" id="video-empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below!</p></div>';
-      }
-    });
-
-    menuDropdown.appendChild(editOption);
-    menuDropdown.appendChild(shareOption);
-    menuDropdown.appendChild(removeOption);
-    menuWrap.appendChild(menuTab);
-    menuWrap.appendChild(menuDropdown);
-    card.appendChild(menuWrap);
     videoGrid.appendChild(card);
     if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
-    card.querySelector('.video-wrapper').addEventListener('click', () => openVideoLightbox(src, title, type, vimeoId));
+    card.addEventListener('click', () => openVideoLightbox(src, title, type, vimeoId, tag, card));
 
     if (!skipSave) saveVideoToIndex(src, title, type, tag);
   }
@@ -18377,7 +18310,10 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   const videoLightboxInner = document.getElementById('video-lightbox-inner');
   const videoLightboxCaption = document.getElementById('video-lightbox-caption');
 
-  function openVideoLightbox(src, title, type, vimeoId) {
+  const videoLightboxMenuTab = document.getElementById('video-lightbox-menu-tab');
+  const videoLightboxMenuDropdown = document.getElementById('video-lightbox-menu-dropdown');
+
+  function openVideoLightbox(src, title, type, vimeoId, tag, card) {
     const html = type === 'cloudinary'
       ? `<video controls autoplay style="width:100%;height:100%;display:block;background:#000;"><source src="${src}" type="video/mp4"></video>`
       : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
@@ -18385,11 +18321,74 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     videoLightboxInner.innerHTML = html;
     videoLightboxCaption.textContent = title || 'Family Video';
     videoLightbox.classList.add('open');
+
+    // Build menu options fresh for this specific video
+    videoLightboxMenuDropdown.innerHTML = '';
+    videoLightboxMenuDropdown.style.display = 'none';
+
+    const editOption = document.createElement('button');
+    editOption.textContent = '✎ Edit';
+    editOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
+    editOption.addEventListener('click', async e => {
+      e.stopPropagation();
+      videoLightboxMenuDropdown.style.display = 'none';
+      const newTitle = prompt('Edit video title:', videoLightboxCaption.textContent);
+      if (newTitle === null) return;
+      const trimmed = newTitle.trim() || 'Family Video';
+      videoLightboxCaption.textContent = trimmed;
+      if (card) { const t = card.querySelector('.video-title'); if (t) t.textContent = trimmed; }
+      try {
+        const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+        await setDoc(doc(db, 'videos', docId), { src, title: trimmed, type, tag, uploadedAt: Date.now() });
+      } catch(err) { console.error('Error updating video title:', err); }
+    });
+
+    const shareOption = document.createElement('button');
+    shareOption.textContent = '⤴ Share';
+    shareOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
+    shareOption.addEventListener('click', e => {
+      e.stopPropagation();
+      videoLightboxMenuDropdown.style.display = 'none';
+      shareItem('video', card ? card.dataset.shareId : makeShareId(src), card || { querySelector: () => ({ textContent: title }) });
+    });
+
+    const removeOption = document.createElement('button');
+    removeOption.textContent = '🗑 Remove';
+    removeOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#e63030;';
+    removeOption.addEventListener('click', async e => {
+      e.stopPropagation();
+      videoLightboxMenuDropdown.style.display = 'none';
+      if (!confirm('Remove this video? This cannot be undone.')) return;
+      try {
+        const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+        await deleteDoc(doc(db, 'videos', docId));
+      } catch(err) { console.error('Error deleting video from Firestore:', err); }
+      if (card) {
+        card.remove();
+        if (!videoGrid.querySelector('.video-card')) {
+          videoGrid.innerHTML = '<div class="video-empty" id="video-empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below!</p></div>';
+        }
+      }
+      closeVideoLightbox();
+    });
+
+    videoLightboxMenuDropdown.appendChild(editOption);
+    videoLightboxMenuDropdown.appendChild(shareOption);
+    videoLightboxMenuDropdown.appendChild(removeOption);
   }
+
+  videoLightboxMenuTab.addEventListener('click', e => {
+    e.stopPropagation();
+    videoLightboxMenuDropdown.style.display = videoLightboxMenuDropdown.style.display === 'block' ? 'none' : 'block';
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#video-lightbox-menu-wrap')) videoLightboxMenuDropdown.style.display = 'none';
+  });
 
   function closeVideoLightbox() {
     videoLightbox.classList.remove('open');
     videoLightboxInner.innerHTML = '';
+    videoLightboxMenuDropdown.style.display = 'none';
   }
 
   document.getElementById('video-lightbox-close').addEventListener('click', closeVideoLightbox);
@@ -18453,7 +18452,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       if (target) {
         window.sharedLinkHandled = true;
         showPage('videos');
-        target.querySelector('.video-wrapper').click();
+        target.click();
       }
     }
   }
