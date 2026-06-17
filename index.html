@@ -3783,8 +3783,8 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
   </div>
   <div class="video-grid" id="video-grid">
     <div class="video-empty" id="video-empty">
-      <svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg>
-      <p>No videos yet — add one below</p>
+      <div class="spinner-ring"></div>
+      <p>Loading videos...</p>
     </div>
   </div>
 </section>
@@ -18205,15 +18205,15 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   const videoDropZone = document.getElementById('video-drop-zone');
   const videoStatus = document.getElementById('video-upload-status');
 
-  function addVideoCard(src, title, type, tag) {
+  function addVideoCard(src, title, type, tag, skipSave) {
     const empty = document.getElementById('video-empty');
     if (empty) empty.remove();
     const card = document.createElement('div');
-    card.className = 'video-card'; card.dataset.vtag = tag || 'all';
+    card.className = 'video-card'; card.dataset.vtag = tag || 'all'; card.dataset.src = src;
     card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
     const mediaHTML = type === 'cloudinary'
-      ? `<video controls style="width:100%;display:block;max-height:220px;background:#000;"><source src="${src}" type="video/mp4"></video>`
+      ? `<video controls style="width:100%;height:100%;display:block;object-fit:cover;background:#000;"><source src="${src}" type="video/mp4"></video>`
       : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
@@ -18221,9 +18221,13 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = '🗑 Remove';
     deleteBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:rgba(20,20,18,0.75);color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;z-index:3;';
-    deleteBtn.addEventListener('click', e => {
+    deleteBtn.addEventListener('click', async e => {
       e.stopPropagation();
       if (confirm('Remove this video? This cannot be undone.')) {
+        try {
+          const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+          await deleteDoc(doc(db, 'videos', docId));
+        } catch(err) { console.error('Error deleting video from Firestore:', err); }
         card.remove();
         if (!videoGrid.querySelector('.video-card')) {
           videoGrid.innerHTML = '<div class="video-empty" id="video-empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below!</p></div>';
@@ -18233,7 +18237,39 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     card.appendChild(deleteBtn);
     videoGrid.appendChild(card);
     if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
+
+    if (!skipSave) saveVideoToIndex(src, title, type, tag);
   }
+
+  async function saveVideoToIndex(src, title, type, tag) {
+    try {
+      const docId = btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 100);
+      await setDoc(doc(db, 'videos', docId), { src, title: title || '', type, tag, uploadedAt: Date.now() });
+    } catch(e) { console.error('Firestore video save error:', e); }
+  }
+
+  async function loadSavedVideos() {
+    try {
+      const snapshot = await getDocs(collection(db, 'videos'));
+      const seen = new Set();
+      snapshot.forEach(docSnap => {
+        const { src, title, type, tag } = docSnap.data();
+        if (!seen.has(src)) {
+          seen.add(src);
+          addVideoCard(src, title, type, tag, true);
+        }
+      });
+      if (seen.size === 0) {
+        const empty = document.getElementById('video-empty');
+        if (empty) empty.innerHTML = '<svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below</p>';
+      }
+    } catch(e) {
+      console.error('Firestore video load error:', e);
+      const empty = document.getElementById('video-empty');
+      if (empty) empty.innerHTML = '<p style="color:#e63030;font-size:0.8rem;">Error loading videos — please refresh.</p>';
+    }
+  }
+  loadSavedVideos();
 
   async function uploadVideoToCloudinary(file) {
     const tag = document.getElementById('video-tag-input').value;
