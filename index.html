@@ -18222,17 +18222,29 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   async function uploadVideoToCloudinary(file) {
     const tag = document.getElementById('video-tag-input').value;
     if (!tag) { videoStatus.textContent = 'Please choose a category first.'; return; }
+    const sizeMB = file.size / 1024 / 1024;
+    if (sizeMB > 100) {
+      videoStatus.textContent = `File is ${Math.round(sizeMB)}MB — Cloudinary free plan limits unsigned uploads to 100MB. Try a smaller/shorter video.`;
+      return;
+    }
     const title = document.getElementById('video-title-input').value || file.name.replace(/\.[^.]+$/, '');
-    videoStatus.textContent = 'Uploading video...';
+    videoStatus.textContent = `Uploading ${Math.round(sizeMB)}MB video...`;
     const formData = new FormData();
     formData.append('file', file); formData.append('upload_preset', UPLOAD_PRESET); formData.append('folder', 'family-videos'); formData.append('resource_type', 'video');
     try {
       const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, { method: 'POST', body: formData });
-      if (!res.ok) throw new Error();
       const data = await res.json();
+      if (!res.ok) {
+        console.error('Cloudinary video upload error:', data);
+        videoStatus.textContent = 'Upload failed: ' + (data.error ? data.error.message : 'unknown error');
+        return;
+      }
       addVideoCard(data.secure_url, title, 'cloudinary', tag);
       videoStatus.textContent = '✓ Video uploaded and saved permanently!';
-    } catch { videoStatus.textContent = 'Upload failed — check file size (max 500MB).'; }
+    } catch (e) {
+      console.error('Video upload exception:', e);
+      videoStatus.textContent = 'Upload failed: ' + e.message;
+    }
   }
 
   document.querySelectorAll('.video-filter-btn').forEach(btn => {
@@ -18244,7 +18256,12 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     });
   });
 
-  videoInput.addEventListener('change', e => { if (e.target.files[0]) uploadVideoToCloudinary(e.target.files[0]); });
+  videoInput.addEventListener('change', e => {
+    videoStatus.textContent = 'File selected: ' + (e.target.files[0] ? e.target.files[0].name + ' (' + Math.round(e.target.files[0].size/1024/1024) + 'MB)' : 'none');
+    if (e.target.files[0]) {
+      setTimeout(() => uploadVideoToCloudinary(e.target.files[0]), 100);
+    }
+  });
   videoDropZone.addEventListener('dragover', e => { e.preventDefault(); videoDropZone.classList.add('drag-over'); });
   videoDropZone.addEventListener('dragleave', () => videoDropZone.classList.remove('drag-over'));
   videoDropZone.addEventListener('drop', e => { e.preventDefault(); videoDropZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) uploadVideoToCloudinary(e.dataTransfer.files[0]); });
