@@ -18209,6 +18209,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     if (empty) empty.remove();
     const card = document.createElement('div');
     card.className = 'video-card'; card.dataset.vtag = tag || 'all';
+    card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
     const mediaHTML = type === 'cloudinary'
       ? `<video controls style="width:100%;display:block;max-height:220px;background:#000;"><source src="${src}" type="video/mp4"></video>`
@@ -18216,6 +18217,19 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
     card.innerHTML = `<div class="video-wrapper">${mediaHTML}</div><div class="video-info"><p class="video-title">${title || 'Family Video'}</p><p class="video-meta">${type === 'vimeo' ? 'Vimeo' : 'Uploaded'} · ${labelEl ? labelEl.textContent : tag}</p></div>`;
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '🗑 Remove';
+    deleteBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:rgba(20,20,18,0.75);color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;z-index:3;';
+    deleteBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm('Remove this video? This cannot be undone.')) {
+        card.remove();
+        if (!videoGrid.querySelector('.video-card')) {
+          videoGrid.innerHTML = '<div class="video-empty" id="video-empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#ccc" stroke-width="1.2"/><path d="M16 13l-4-3v6l4-3z" fill="#ccc"/></svg><p>No videos yet — add one below!</p></div>';
+        }
+      }
+    });
+    card.appendChild(deleteBtn);
     videoGrid.appendChild(card);
     if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
   }
