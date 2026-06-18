@@ -61,6 +61,7 @@
     @media (max-width: 768px) {
       .lightbox-img { max-width: 95vw; max-height: 75vh; }
       .lightbox-nav { font-size: 1.5rem; padding: 0.5rem; }
+      .video-lightbox-fullscreen { right: 6rem; width: 28px; height: 28px; font-size: 0.95rem; }
     }
 
     .video-lightbox { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.95); z-index: 100; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; }
@@ -68,6 +69,8 @@
     .video-lightbox-inner { width: 100%; max-width: 960px; aspect-ratio: 16/9; background: #000; position: relative; }
     .video-lightbox-inner video, .video-lightbox-inner iframe { width: 100%; height: 100%; display: block; border: none; }
     .video-lightbox-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.8rem; cursor: pointer; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 200; line-height: 1; padding: 0.5rem; z-index: 101; }
+    .video-lightbox-fullscreen { position: absolute; top: 1rem; right: 7.5rem; background: rgba(255,255,255,0.15); border: none; color: white; font-size: 1.1rem; cursor: pointer; line-height: 1; width: 32px; height: 32px; border-radius: 3px; z-index: 101; }
+    .video-lightbox-fullscreen:hover { background: rgba(255,255,255,0.3); }
     .video-lightbox-close:hover { color: white; }
     .video-lightbox-caption { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); margin-top: 1rem; text-align: center; }
     .about-layout { display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap; }
@@ -109,8 +112,8 @@
     .video-wrapper video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .video-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-    .video-play-dot { background: #e63030; border-radius: 50%; width: 10px; height: 10px; transition: transform 0.2s; }
-    .video-wrapper:hover .video-play-dot { transform: scale(1.3); }
+    .video-play-dot { background: #e63030; border-radius: 50%; width: 20px; height: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); transition: transform 0.2s; }
+    .video-wrapper:hover .video-play-dot { transform: scale(1.2); }
     .video-info { padding: 0.85rem 1rem; border-top: 1px solid #e8e6e0; }
     .video-title { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.85rem; font-weight: 500; color: #1a1a18; margin-bottom: 0.2rem; }
     .video-meta { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.72rem; color: #aaa89e; letter-spacing: 0.05em; }
@@ -211,7 +214,7 @@
       .video-info { padding: 0.6rem !important; }
       .video-title { font-size: 0.75rem !important; }
       .video-meta { font-size: 0.65rem !important; }
-      .video-play-dot { width: 8px !important; height: 8px !important; }
+      .video-play-dot { width: 14px !important; height: 14px !important; }
 
       /* UPLOAD SECTION */
       .upload-section { padding: 2rem 1.25rem; }
@@ -3785,6 +3788,7 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 
 <div class="video-lightbox" id="video-lightbox">
   <button class="video-lightbox-close" id="video-lightbox-close">✕</button>
+  <button class="video-lightbox-fullscreen" id="video-lightbox-fullscreen" title="Full screen">⛶</button>
   <div class="video-lightbox-inner" id="video-lightbox-inner"></div>
   <span class="video-lightbox-caption" id="video-lightbox-caption"></span>
   <div class="video-menu-wrap" id="video-lightbox-menu-wrap" style="position:absolute;top:1rem;right:3.5rem;">
@@ -18011,7 +18015,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
 
   // Generate a short, URL-safe ID from a source string
   function makeShareId(src) {
-    return btoa(src).replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
+    const clean = btoa(src).replace(/[^a-zA-Z0-9]/g, '');
+    return clean.substring(Math.max(0, clean.length - 12));
   }
 
   // ADD TO GALLERY
@@ -18292,8 +18297,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
     const mediaHTML = type === 'cloudinary'
-      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted preload="metadata"><source src="${src}" type="video/mp4"></video>`
-      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=0&autoplay=0&muted=1" frameborder="0" style="pointer-events:none;"></iframe>`
+      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted autoplay loop playsinline preload="auto"><source src="${src}" type="video/mp4"></video>`
+      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&muted=1&loop=1" frameborder="0" style="pointer-events:none;"></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     const playOverlay = '<div class="video-play-overlay"><div class="video-play-dot"></div></div>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
@@ -18392,7 +18397,15 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   }
 
   document.getElementById('video-lightbox-close').addEventListener('click', closeVideoLightbox);
-  videoLightbox.addEventListener('click', e => { if (e.target === videoLightbox) closeVideoLightbox(); });
+  document.getElementById('video-lightbox-fullscreen').addEventListener('click', () => {
+    const el = videoLightboxInner.querySelector('video, iframe') || videoLightboxInner;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.webkitEnterFullscreen) el.webkitEnterFullscreen();
+  });
+  videoLightbox.addEventListener('click', e => {
+    if (e.target === videoLightbox) closeVideoLightbox();
+  });
   document.addEventListener('keydown', e => {
     if (videoLightbox.classList.contains('open') && e.key === 'Escape') closeVideoLightbox();
   });
