@@ -66,7 +66,9 @@
 
     .video-lightbox { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.95); z-index: 100; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; }
     .video-lightbox.open { display: flex; }
-    .video-lightbox-inner { width: 100%; max-width: 960px; aspect-ratio: 16/9; background: #000; position: relative; }
+    .video-lightbox-inner { width: 100%; max-width: 960px; aspect-ratio: 16/9; background: #000; position: relative; transition: max-width 0.2s, width 0.2s, height 0.2s; }
+    .video-lightbox.expanded .video-lightbox-inner { max-width: 100vw; width: 100vw; height: 100vh; aspect-ratio: unset; }
+    .video-lightbox.expanded .video-lightbox-caption { display: none; }
     .video-lightbox-inner video, .video-lightbox-inner iframe { width: 100%; height: 100%; display: block; border: none; }
     .video-lightbox-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.8rem; cursor: pointer; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 200; line-height: 1; padding: 0.5rem; z-index: 101; }
     .video-lightbox-fullscreen { position: absolute; top: 1rem; right: 7.5rem; background: rgba(255,255,255,0.15); border: none; color: white; font-size: 1.1rem; cursor: pointer; line-height: 1; width: 32px; height: 32px; border-radius: 3px; z-index: 101; }
@@ -17929,13 +17931,6 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   // SHARE - builds a link to a specific photo or video and copies/shares it
   async function shareItem(type, shareId, el) {
     const url = `${window.location.origin}${window.location.pathname}#${type}=${shareId}`;
-    const title = type === 'video' ? (el.querySelector('.video-title')?.textContent || 'Family Video') : (el.dataset.caption || 'Family Photo');
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Rentner-Brown Family Photos', text: title, url });
-        return;
-      } catch(e) { /* user cancelled or unsupported, fall through to copy */ }
-    }
     try {
       await navigator.clipboard.writeText(url);
       showShareToast('Link copied!');
@@ -18319,12 +18314,14 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     card.dataset.shareId = makeShareId(src);
     card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
-    const previewSrc = (type === 'cloudinary' && src.includes('res.cloudinary.com'))
-      ? src.replace('/upload/', '/upload/q_auto,w_500,vc_auto/')
-      : src;
+    const isCloudinaryVideo = type === 'cloudinary' && src.includes('res.cloudinary.com');
+    // Short 4-second low-quality looping preview instead of the full video
+    const previewSrc = isCloudinaryVideo ? src.replace('/upload/', '/upload/q_auto:low,w_400,e_preview:duration_4/') : src;
+    // Instant poster frame so something shows before any video data loads
+    const posterSrc = isCloudinaryVideo ? src.replace('/upload/', '/upload/q_auto,w_400/').replace(/\.[^.]+$/, '.jpg') : '';
     const mediaHTML = type === 'cloudinary'
-      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted autoplay loop playsinline preload="metadata"><source src="${previewSrc}" type="video/mp4"></video>`
-      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&muted=1&loop=1" frameborder="0" style="pointer-events:none;"></iframe>`
+      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted loop playsinline preload="auto" poster="${posterSrc}"><source src="${previewSrc}" type="video/mp4"></video>`
+      : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=0&autoplay=0&muted=1&loop=1" frameborder="0" style="pointer-events:none;" data-vimeo-bg-src="https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&muted=1&loop=1"></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     const playOverlay = '<div class="video-play-overlay"><div class="video-play-dot"></div></div>';
     const labelEl = document.querySelector(`.video-filter-btn[data-vfilter="${tag}"]`);
@@ -18332,6 +18329,41 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     videoGrid.appendChild(card);
     if (cursor) { card.addEventListener('mouseenter', () => cursor.classList.add('hovered')); card.addEventListener('mouseleave', () => cursor.classList.remove('hovered')); }
     card.addEventListener('click', () => openVideoLightbox(src, title, type, vimeoId, tag, card));
+
+    // Only play preview once visible on screen, pause when scrolled away
+    const previewVideoEl = card.querySelector('video');
+    const previewIframeEl = card.querySelector('iframe');
+    if (previewVideoEl) {
+      previewVideoEl.muted = true;
+      previewVideoEl.defaultMuted = true;
+      previewVideoEl.addEventListener('canplay', () => {
+        if (card.dataset.wantsPlay === 'true') {
+          previewVideoEl.muted = true;
+          previewVideoEl.play().catch(() => {});
+        }
+      });
+    }
+    if (previewVideoEl || previewIframeEl) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            card.dataset.wantsPlay = 'true';
+            if (previewVideoEl) {
+              previewVideoEl.muted = true;
+              previewVideoEl.play().catch(() => {});
+            }
+            if (previewIframeEl && !previewIframeEl.dataset.activated) {
+              previewIframeEl.src = previewIframeEl.dataset.vimeoBgSrc;
+              previewIframeEl.dataset.activated = 'true';
+            }
+          } else {
+            card.dataset.wantsPlay = 'false';
+            if (previewVideoEl) previewVideoEl.pause();
+          }
+        });
+      }, { threshold: 0.25 });
+      obs.observe(card);
+    }
 
     if (!skipSave) saveVideoToIndex(src, title, type, tag);
   }
@@ -18345,8 +18377,11 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   const videoLightboxMenuDropdown = document.getElementById('video-lightbox-menu-dropdown');
 
   function openVideoLightbox(src, title, type, vimeoId, tag, card) {
+    const lightboxSrc = (type === 'cloudinary' && src.includes('res.cloudinary.com'))
+      ? src.replace('/upload/', '/upload/q_auto/')
+      : src;
     const html = type === 'cloudinary'
-      ? `<video controls autoplay style="width:100%;height:100%;display:block;background:#000;"><source src="${src}" type="video/mp4"></video>`
+      ? `<video controls autoplay style="width:100%;height:100%;display:block;background:#000;"><source src="${lightboxSrc}" type="video/mp4"></video>`
       : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     videoLightboxInner.innerHTML = html;
@@ -18417,7 +18452,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   });
 
   function closeVideoLightbox() {
-    videoLightbox.classList.remove('open');
+    videoLightbox.classList.remove('open', 'expanded');
     videoLightboxInner.innerHTML = '';
     videoLightboxMenuDropdown.style.display = 'none';
   }
@@ -18425,18 +18460,17 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   document.getElementById('video-lightbox-close').addEventListener('click', closeVideoLightbox);
   document.getElementById('video-lightbox-fullscreen').addEventListener('click', () => {
     const videoEl = videoLightboxInner.querySelector('video');
-    // For native <video>, iOS needs webkitEnterFullscreen on the element itself; everything else uses the container
-    if (videoEl && videoEl.webkitEnterFullscreen && !videoEl.requestFullscreen) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    // iOS gets genuine native fullscreen for <video> elements (handles rotation etc.)
+    if (isIOS && videoEl && videoEl.webkitEnterFullscreen) {
       videoEl.webkitEnterFullscreen();
       return;
     }
-    const el = videoLightboxInner;
-    if (el.requestFullscreen) el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    // Everyone else (desktop + mobile Vimeo iframes) gets a CSS-based expand
+    // instead of the real Fullscreen API, which avoids macOS's Space-switching bug
+    videoLightbox.classList.toggle('expanded');
   });
-  videoLightbox.addEventListener('click', e => {
-    if (e.target === videoLightbox) closeVideoLightbox();
-  });
+  // Backdrop click-to-close intentionally removed - only the X button closes the video lightbox
   document.addEventListener('keydown', e => {
     if (videoLightbox.classList.contains('open') && e.key === 'Escape') closeVideoLightbox();
   });
