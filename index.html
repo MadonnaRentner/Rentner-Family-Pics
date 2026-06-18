@@ -17930,7 +17930,6 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
 
   // SHARE - builds a link to a specific photo or video and copies/shares it
   function shareItem(type, shareId, el) {
-    console.log('Generating share link for', type, 'with shareId:', shareId);
     const url = `${window.location.origin}${window.location.pathname}#${type}=${shareId}`;
     showShareModal(url);
   }
@@ -18099,7 +18098,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
 
   // Generate a short, URL-safe ID from a source string
   function makeShareId(src) {
-    const clean = btoa(src).replace(/[^a-zA-Z0-9]/g, '');
+    const cleanUrl = src.split('?')[0];
+    const clean = btoa(cleanUrl).replace(/[^a-zA-Z0-9]/g, '');
     return clean.substring(Math.max(0, clean.length - 12));
   }
 
@@ -18358,7 +18358,6 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const card = document.createElement('div');
     card.className = 'video-card'; card.dataset.vtag = tag || 'all'; card.dataset.src = src;
     card.dataset.shareId = makeShareId(src);
-    console.log('Video card created - src:', src, '-> shareId:', card.dataset.shareId);
     card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
     const isCloudinaryVideo = type === 'cloudinary' && src.includes('res.cloudinary.com');
@@ -18592,10 +18591,7 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
         }, 100);
       }
     } else if (videoMatch && window.videosLoaded) {
-      console.log('Looking for video with shareId:', videoMatch[1]);
-      console.log('Available video shareIds:', [...document.querySelectorAll('.video-card')].map(c => c.dataset.shareId));
       const target = [...document.querySelectorAll('.video-card')].find(c => c.dataset.shareId === videoMatch[1]);
-      console.log('Found target:', target ? target.dataset.src : 'NONE');
       if (target) {
         window.sharedLinkHandled = true;
         showPage('videos');
