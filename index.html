@@ -17929,23 +17929,67 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
   }
 
   // SHARE - builds a link to a specific photo or video and copies/shares it
-  async function shareItem(type, shareId, el) {
+  function shareItem(type, shareId, el) {
     const url = `${window.location.origin}${window.location.pathname}#${type}=${shareId}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      showShareToast('Link copied!');
-    } catch(e) {
-      console.error('Clipboard write failed:', e);
-      showShareToast(url, true);
-    }
+    showShareModal(url);
   }
 
-  function showShareToast(msg, isLink) {
-    const toast = document.createElement('div');
-    toast.textContent = msg;
-    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a18;color:white;padding:10px 18px;border-radius:4px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.8rem;z-index:300;max-width:90vw;word-break:break-all;text-align:center;';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), isLink ? 6000 : 2200);
+  function showShareModal(url) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(20,20,18,0.85);z-index:400;display:flex;align-items:center;justify-content:center;padding:1rem;';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background:#fafaf8;padding:1.5rem;width:360px;max-width:100%;box-sizing:border-box;';
+
+    const label = document.createElement('p');
+    label.textContent = 'Copy this link to share:';
+    label.style.cssText = 'font-family:Helvetica Neue,Arial,sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:#aaa89e;margin-bottom:0.6rem;';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = url;
+    input.readOnly = true;
+    input.style.cssText = 'width:100%;box-sizing:border-box;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.8rem;padding:0.6rem;border:1px solid #d8d6d0;background:#fff;color:#1a1a18;margin-bottom:0.75rem;';
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:0.5rem;';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy Link';
+    copyBtn.style.cssText = 'flex:1;background:#e63030;color:white;border:none;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem;cursor:pointer;';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Done';
+    closeBtn.style.cssText = 'flex:1;background:transparent;color:#888880;border:1px solid #d8d6d0;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem;cursor:pointer;';
+
+    function doCopy() {
+      input.focus();
+      input.select();
+      input.setSelectionRange(0, url.length);
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch(e) { copied = false; }
+      if (copied) {
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy Link'; }, 1500);
+      } else {
+        copyBtn.textContent = 'Select & press Cmd/Ctrl+C';
+      }
+    }
+
+    copyBtn.addEventListener('click', doCopy);
+    closeBtn.addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+    btnRow.appendChild(copyBtn);
+    btnRow.appendChild(closeBtn);
+    box.appendChild(label);
+    box.appendChild(input);
+    box.appendChild(btnRow);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    // Try copying automatically right away so most people don't need to tap Copy Link at all
+    setTimeout(doCopy, 50);
   }
 
   function openLightbox(index) {
