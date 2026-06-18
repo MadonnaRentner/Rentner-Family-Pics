@@ -3780,6 +3780,10 @@ Z/aqR0bbRXF0gfADN2A47j/pXXCcZus316K+iWnxw6IZxGytIePdkYFdIg3D2+fNUn6ZWH4SxVUc
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightbox-close">✕</button>
   <span class="lightbox-counter" id="lightbox-counter"></span>
+  <div class="video-menu-wrap" id="lightbox-menu-wrap" style="position:absolute;top:1rem;right:3.5rem;">
+    <button class="video-menu-tab" id="lightbox-menu-tab" style="background:rgba(255,255,255,0.15);color:white;border:none;font-size:1rem;line-height:1;width:32px;height:32px;cursor:pointer;border-radius:3px;">⋯</button>
+    <div class="video-menu-dropdown" id="lightbox-menu-dropdown" style="display:none;position:absolute;top:38px;right:0;background:#fafaf8;border:1px solid #d8d6d0;min-width:130px;box-shadow:0 4px 12px rgba(0,0,0,0.25);"></div>
+  </div>
   <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#8249;</button>
   <img class="lightbox-img" id="lightbox-img" src="" alt="">
   <button class="lightbox-nav lightbox-next" id="lightbox-next">&#8250;</button>
@@ -17952,19 +17956,58 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const items = getVisibleItems();
     if (!items[index]) return;
     currentIndex = index;
-    const img = items[index].querySelector('img');
-    const cap = items[index].querySelector('.caption-text');
+    const currentItem = items[index];
+    const img = currentItem.querySelector('img');
+    const cap = currentItem.querySelector('.caption-text');
     lightboxImg.src = img ? img.src : '';
     lbCaption.textContent = cap ? cap.textContent.trim() : '';
     lightboxCounter.textContent = `${index + 1} / ${items.length}`;
     lightbox.classList.add('open');
+
+    // Build menu for this specific photo
+    const menuDropdown = document.getElementById('lightbox-menu-dropdown');
+    menuDropdown.innerHTML = '';
+    menuDropdown.style.display = 'none';
+
+    const editOption = document.createElement('button');
+    editOption.textContent = '✎ Edit';
+    editOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
+    editOption.addEventListener('click', e => {
+      e.stopPropagation();
+      menuDropdown.style.display = 'none';
+      openEditModal(currentItem, currentItem.dataset.src, currentItem.dataset.tag);
+    });
+
+    const shareOption = document.createElement('button');
+    shareOption.textContent = '⤴ Share';
+    shareOption.style.cssText = 'display:block;width:100%;text-align:left;background:none;border:none;border-top:1px solid #e8e6e0;padding:8px 12px;font-family:Helvetica Neue,Arial,sans-serif;font-size:0.75rem;letter-spacing:0.05em;cursor:pointer;color:#1a1a18;';
+    shareOption.addEventListener('click', e => {
+      e.stopPropagation();
+      menuDropdown.style.display = 'none';
+      shareItem('photo', currentItem.dataset.shareId, currentItem);
+    });
+
+    menuDropdown.appendChild(editOption);
+    menuDropdown.appendChild(shareOption);
   }
 
-  function closeLightbox() { lightbox.classList.remove('open'); lightboxImg.src = ''; }
+  function closeLightbox() { lightbox.classList.remove('open'); lightboxImg.src = ''; document.getElementById('lightbox-menu-dropdown').style.display = 'none'; }
 
   const lightboxClose = document.getElementById('lightbox-close');
   if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  document.getElementById('lightbox-menu-tab').addEventListener('click', e => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('lightbox-menu-dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#lightbox-menu-wrap')) {
+      const dropdown = document.getElementById('lightbox-menu-dropdown');
+      if (dropdown) dropdown.style.display = 'none';
+    }
+  });
 
   document.getElementById('lightbox-prev').addEventListener('click', e => {
     e.stopPropagation();
@@ -18052,28 +18095,8 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     const captionText = photoCaption || (label ? label.textContent : primaryTag);
     caption.innerHTML = `<span class="caption-text">${captionText}</span>`;
 
-    // Edit button
-    const editBtn = document.createElement('button');
-    editBtn.className = 'edit-btn';
-    editBtn.textContent = '✎ Edit';
-    editBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openEditModal(item, src, tag);
-    });
-
-    // Share button
-    const shareBtn = document.createElement('button');
-    shareBtn.className = 'edit-btn share-btn';
-    shareBtn.textContent = '⤴ Share';
-    shareBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      shareItem('photo', item.dataset.shareId, item);
-    });
-
     item.appendChild(img);
     item.insertAdjacentHTML('beforeend', badge);
-    item.appendChild(editBtn);
-    item.appendChild(shareBtn);
     item.appendChild(caption);
     gallery.appendChild(item);
     item.addEventListener('click', () => { const items = getVisibleItems(); openLightbox(items.indexOf(item)); });
@@ -18296,8 +18319,11 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
     card.dataset.shareId = makeShareId(src);
     card.style.position = 'relative';
     const vimeoId = type === 'vimeo' ? src.match(/vimeo\.com\/(\d+)/)?.[1] : null;
+    const previewSrc = (type === 'cloudinary' && src.includes('res.cloudinary.com'))
+      ? src.replace('/upload/', '/upload/q_auto,w_500,vc_auto/')
+      : src;
     const mediaHTML = type === 'cloudinary'
-      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted autoplay loop playsinline preload="auto"><source src="${src}" type="video/mp4"></video>`
+      ? `<video style="width:100%;height:100%;display:block;object-fit:cover;background:#000;" muted autoplay loop playsinline preload="metadata"><source src="${previewSrc}" type="video/mp4"></video>`
       : vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&muted=1&loop=1" frameborder="0" style="pointer-events:none;"></iframe>`
       : '<p style="color:#aaa;padding:1rem;font-size:0.8rem;">Invalid Vimeo URL</p>';
     const playOverlay = '<div class="video-play-overlay"><div class="video-play-dot"></div></div>';
@@ -18398,10 +18424,15 @@ RuPPlP8/DaWID/YndesAAAAASUVORK5CYII=" alt="Wax Seal" style="width:100px; height:
 
   document.getElementById('video-lightbox-close').addEventListener('click', closeVideoLightbox);
   document.getElementById('video-lightbox-fullscreen').addEventListener('click', () => {
-    const el = videoLightboxInner.querySelector('video, iframe') || videoLightboxInner;
+    const videoEl = videoLightboxInner.querySelector('video');
+    // For native <video>, iOS needs webkitEnterFullscreen on the element itself; everything else uses the container
+    if (videoEl && videoEl.webkitEnterFullscreen && !videoEl.requestFullscreen) {
+      videoEl.webkitEnterFullscreen();
+      return;
+    }
+    const el = videoLightboxInner;
     if (el.requestFullscreen) el.requestFullscreen();
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if (el.webkitEnterFullscreen) el.webkitEnterFullscreen();
   });
   videoLightbox.addEventListener('click', e => {
     if (e.target === videoLightbox) closeVideoLightbox();
